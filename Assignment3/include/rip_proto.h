@@ -22,3 +22,4 @@ void rip_obj_destroy_route_entry (route_entry_t);
 
 /* global variables */
 extern node_config_t rip_node_config;
+extern unsigned int rip_routing_table_entry_number;

@@ -15,4 +15,4 @@ $(PROG):
 
 clean:
 	make -C src clean
-	rm -f *.o *~ $(PROG)
+	rm -f *.o *~ $(PROG) core

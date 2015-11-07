@@ -2,6 +2,65 @@
 #include <rip_proto.h>
 
 node_config_t rip_node_config;
+unsigned int rip_routing_table_entry_number;
+
+void rip_main_insert_entry_table_myself (void)
+{
+    node_info_t myself;
+    route_entry_t entry;
+    
+    rip_routing_table_entry_number = 0;
+
+    myself = rip_obj_new_node_info ();
+    entry = rip_obj_new_route_entry ();
+    
+    myself->name = strdup (MYSELF);
+    myself->inet = rip_node_config->inet;
+    entry->destination = myself;
+    entry->nexthop = myself;
+    entry->cost = 0;
+    entry->ttl = rip_node_config->ttl * rip_node_config->period;
+
+    routingtable[rip_routing_table_entry_number++] = entry;
+    return;
+}
+
+int rip_main_parse_config (void)
+{
+    char line[128];
+    char *tk, *l;
+    node_info_t info;
+    route_entry_t entry;
+ 
+    while (fgets (line, 128, rip_node_config->fconfig)){
+	l = line;
+	info = rip_obj_new_node_info ();
+	entry = rip_obj_new_route_entry ();
+	tk = strsep (&l, " ");
+	info->name = strdup (tk);
+	tk = strsep (&l, " ");
+	inet_pton(AF_INET, tk, &(info->inet->sin_addr));
+	tk = strsep (&l, "\n");
+	if (!strcmp (tk, "yes")){
+	    entry->destination = info;
+	    entry->nexthop = info;
+	    entry->cost = 1;
+	}
+	else if (!strcmp (tk,"no")){
+	    entry->destination = info;
+	    entry->cost = COST_INFINITY;
+	} else {
+	    fprintf (stderr,"config line error: %s\n",line);
+	    return -1;
+	}
+	/* default TTL */
+	entry->ttl = rip_node_config->ttl * rip_node_config->period;
+	routingtable[rip_routing_table_entry_number++] = entry;
+    }
+
+    fclose (rip_node_config->fconfig);
+    return 0;
+}
 
 void rip_main_parseArgs (int c, char **v) 
 {
@@ -10,6 +69,10 @@ void rip_main_parseArgs (int c, char **v)
     char *port = NULL;
     char *ip = NULL;
 
+    /* default config values */
+    rip_node_config->period = 30;
+    rip_node_config->ttl = 3;
+    
     opterr = 0;
     
     while ((o = getopt (c, v, "c:u:t:i:p:sd")) != -1) {
@@ -60,11 +123,12 @@ void rip_main_parseArgs (int c, char **v)
 	       INET_ADDRSTRLEN);
     printf ("IP = %s\n",b);
 */
+    rip_main_insert_entry_table_myself ();
     if ((rip_node_config->fconfig = fopen (fconfig, "r")) == NULL ){
 	perror ("fopen");
 	exit (1);
     }
-    if (0/*rip_main_parse_config ()*/){
+    if (rip_main_parse_config ()){
 	fprintf (stderr,"%s: error parsing config file\n",v[0]);
 	exit (1);
     }
@@ -82,6 +146,9 @@ int main (int argc, char **argv)
 
     rip_node_config = rip_obj_new_node_config ();
     rip_main_parseArgs (argc, argv);
-    
+    /*if (node_config->debug)*/
+	rip_util_print_routing_table ();
+
+    return 0;
 }
 

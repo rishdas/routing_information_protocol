@@ -26,7 +26,8 @@
 #define FALSE     (bool_t )0
 #define TRUE      (bool_t )1
 #define MAXROUTE       255
-
+#define COST_INFINITY  9999
+#define MYSELF    "me"
 
 /**
  * Defines node's configuration

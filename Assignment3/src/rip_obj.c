@@ -63,8 +63,11 @@ void rip_obj_destroy_node_config (node_config_t conf)
 node_info_t rip_obj_new_node_info (void)
 {
     node_info_t ret;
+    struct sockaddr_in *in;
     
     ret = (node_info_t) rip_malloc (node_info_t_len);
+    in = (struct sockaddr_in *) rip_malloc (sizeof (struct sockaddr_in));
+    ret->inet = in;
     return ret;
 }
 
