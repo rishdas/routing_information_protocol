@@ -36,6 +36,7 @@ struct _node_config
 {
     FILE *fconfig;		/**< Config file stream */
     struct sockaddr_in *inet;	/**< Inet info, including port  */
+    int socket;			/**< UDP socket  */
     cost_t ttl;			/**< Default TTL for routing table entries */
     unsigned int period;	/**< Sending update message period */
     bool_t shorizon;		/**< Using split horizon ? */

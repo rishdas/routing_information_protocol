@@ -72,6 +72,7 @@ void rip_main_parseArgs (int c, char **v)
     /* default config values */
     rip_node_config->period = 30;
     rip_node_config->ttl = 3;
+    rip_node_config->debug = TRUE;
     
     opterr = 0;
     
@@ -147,7 +148,8 @@ int main (int argc, char **argv)
     rip_node_config = rip_obj_new_node_config ();
     rip_main_parseArgs (argc, argv);
     /*if (node_config->debug)*/
-	rip_util_print_routing_table ();
+    rip_util_print_routing_table ();
+    rip_net_bind_port ();
 
     return 0;
 }
