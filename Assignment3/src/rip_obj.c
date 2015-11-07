@@ -1,5 +1,5 @@
-#include <main.h>
-#include <proto.h>
+#include <rip_main.h>
+#include <rip_proto.h>
 
 void *rip_malloc (size_t l)
 {
@@ -31,6 +31,21 @@ void rip_obj_set_node_config (node_config_t conf, FILE *f,
     conf->period = p;
     conf->shorizon = s;
     conf->debug = d;
+}
+
+void rip_obj_set_node_config_inet (char *p)
+{
+    struct addrinfo raw, *baked;
+    
+    memset (&raw, 0, sizeof (struct addrinfo));
+    raw.ai_family = AF_INET;
+    raw.ai_socktype = SOCK_DGRAM;
+    raw.ai_flags = AI_PASSIVE;
+    
+    getaddrinfo (NULL, p, &raw,&baked);
+    rip_node_config->inet = (struct sockaddr_in *)baked->ai_addr;
+    
+    return;
 }
 
 void rip_obj_destroy_node_config (node_config_t conf)

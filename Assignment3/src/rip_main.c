@@ -1,5 +1,5 @@
-#include <main.h>
-#include <proto.h>
+#include <rip_main.h>
+#include <rip_proto.h>
 
 node_config_t rip_node_config;
 
@@ -40,9 +40,23 @@ void rip_main_parseArgs (int c, char **v)
 	fprintf (stderr,"%s: must inform config file!\n",v[0]);
 	exit (1);
     }
+    if (port)
+	rip_obj_set_node_config_inet (port);
+    else{
+	fprintf (stderr,"%s: must inform UDP port!\n",v[0]);
+	exit (1);
+    }
     if ((rip_node_config->fconfig = fopen (fconfig, "r")) == NULL ){
 	perror ("fopen");
 	exit (1);
+    }
+    if (0/*rip_node_parse_config ()*/){
+	fprintf (stderr,"%s: error parsing config file\n",v[0]);
+	exit (1);
+    }
+    if (!rip_node_config->debug){
+	fclose (stderr);
+	freopen ("rip.log","a+",stderr);
     }
     
     

@@ -1,7 +1,7 @@
 # Makefile template
 # Patched by Lucas Brasilino
 
-INCDIR=./include
+INCDIR=../include
 SRCDIR=./src
 PROG = rip
 CFLAGS=-I. -I$(INCDIR) -ggdb -gdwarf-2 
