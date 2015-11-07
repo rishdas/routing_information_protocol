@@ -33,7 +33,7 @@ void rip_obj_set_node_config (node_config_t conf, FILE *f,
     conf->debug = d;
 }
 
-void rip_obj_set_node_config_inet (char *p)
+void rip_obj_set_node_config_inet (char *p, char *i)
 {
     struct addrinfo raw, *baked;
     
@@ -41,10 +41,11 @@ void rip_obj_set_node_config_inet (char *p)
     raw.ai_family = AF_INET;
     raw.ai_socktype = SOCK_DGRAM;
     raw.ai_flags = AI_PASSIVE;
-    
-    getaddrinfo (NULL, p, &raw,&baked);
+
+    /* get the network byte order representation */    
+    getaddrinfo (i, p, &raw,&baked);
     rip_node_config->inet = (struct sockaddr_in *)baked->ai_addr;
-    
+
     return;
 }
 

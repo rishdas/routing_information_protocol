@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <assert.h>
+#include <ifaddrs.h>
 
 
 #define cost_t    unsigned int
