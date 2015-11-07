@@ -2,8 +2,8 @@
 void rip_main_parseArgs (int , char **);
 
 /* obj.c */
-void *rip_malloc (void *, size_t );
-node_config_t rip_obj_new_node_config (void)
+void *rip_malloc (size_t);
+node_config_t rip_obj_new_node_config (void);
 void rip_obj_set_node_config (node_config_t, FILE *, 
 			      struct sockaddr_in *, cost_t ,
 			      unsigned int, bool_t, bool_t);

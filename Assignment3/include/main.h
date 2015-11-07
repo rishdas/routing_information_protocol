@@ -5,13 +5,16 @@
  * 
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <netinet/in.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <assert.h>
 
 #define cost_t    unsigned int
@@ -75,8 +78,11 @@ route_entry_t routingtable[MAXROUTE];
 
 struct _message_entry 
 {
-    struct uint32_t dest_addr;
+    struct in_addr dest_addr;
     cost_t cost;
-} message_entry_t;
+};
 
-message_entry_t message[MAXMSGLEN];
+typedef struct _message_entry message_entry_t;
+#define message_entry_t_len sizeof (struct _message_entry);
+
+message_entry_t message[MAXROUTE];

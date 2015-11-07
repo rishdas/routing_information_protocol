@@ -1,8 +1,10 @@
 #include <main.h>
 #include <proto.h>
 
-void *rip_malloc (void *m, size_t l)
+void *rip_malloc (size_t l)
 {
+    void *m;
+
     m = malloc (l);
     assert (m != NULL);
     memset (m, 0, l);
