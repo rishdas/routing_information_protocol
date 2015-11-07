@@ -2,8 +2,8 @@
 # Patched by Lucas Brasilino
 
 INCDIR=../include
-DEPS = main.h proto.h
-OBJ = main.o obj.o
+DEPS = rip_main.h rip_proto.h
+OBJ = rip_main.o rip_obj.o
 CFLAGS=-I. -I$(INCDIR) -ggdb -gdwarf-2 
 CC=gcc
 

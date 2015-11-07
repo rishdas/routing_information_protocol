@@ -11,7 +11,7 @@ void rip_main_parseArgs (int c, char **v)
     
     opterr = 0;
     
-    while ((o = getopt (argc, argv, "c:u:t:p:sd")) != -1) {
+    while ((o = getopt (c, v, "c:u:t:p:sd")) != -1) {
 	switch (o){
 	case 'c': 
 	    fconfig = strdup (optarg);
@@ -37,7 +37,7 @@ void rip_main_parseArgs (int c, char **v)
     }
     
     if (!fconfig){
-	fprintf (stderr,"%s: must inform config file!\n");
+	fprintf (stderr,"%s: must inform config file!\n",v[0]);
 	exit (1);
     }
     if ((rip_node_config->fconfig = fopen (fconfig, "r")) == NULL ){

@@ -5,14 +5,18 @@
  * 
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <netinet/in.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <assert.h>
+
 
 #define cost_t    unsigned int
 #define bool_t    char
@@ -77,6 +81,9 @@ struct _message_entry
 {
     struct uint32_t dest_addr;
     cost_t cost;
-} message_entry_t;
+};
+
+typedef struct _message_entry message_entry_t;
+#define message_entry_t_len sizeof (struct _message_entry_t_len)
 
 message_entry_t message[MAXMSGLEN];

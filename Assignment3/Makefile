@@ -9,12 +9,10 @@ CC=gcc
 
 all: $(PROG)
 
-#%.o: $(SRCDIR)/%.c $(DEPS)
-#	$(CC) -c -o $(SRCDIR)/$@ $< $(CFLAGS)
-
 $(PROG):
 	make -C src
 	gcc -o $@ $^ $(SRCDIR)/*.o $(CFLAGS) $(LDFLAGS)
 
 clean:
-	rm -f *.o *~ $(PROG) $(SRCDIR)/*.o $(SRCDIR)/*~
+	make -C src clean
+	rm -f *.o *~ $(PROG)
