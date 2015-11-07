@@ -6,6 +6,13 @@
  */
 
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+#include <stdlib.h>
+#include <assert.h>
 
 #define cost_t    unsigned int
 #define bool_t    char
@@ -20,11 +27,12 @@
  */
 struct _node_config
 {
-    FILE *config;		/**< Config file stream */
-    struct sockaddr_in inet;	/**< Inet info, including port  */
+    FILE *fconfig;		/**< Config file stream */
+    struct sockaddr_in *inet;	/**< Inet info, including port  */
     cost_t ttl;			/**< Default TTL for routing table entries */
     unsigned int period;	/**< Sending update message period */
     bool_t shorizon;		/**< Using split horizon ? */
+    bool_t debug;		/**< Is in debug mode ? */
 };
 
 typedef struct _node_config *node_config_t;
@@ -34,14 +42,14 @@ typedef struct _node_config *node_config_t;
  * Information about nodes (to be used in graph/table)
  * 
  */
-struct _node 
+struct _node_info
 {
     char *name;			/**< Name of the node */
-    struct sockaddr_in inet;	/**< Inet related information */
+    struct sockaddr_in *inet;	/**< Inet related information */
 };
 
-typedef struct _node *node_t;
-#define node_config_t_len sizeof (struct _node)
+typedef struct _node_info *node_info_t;
+#define node_info_t_len sizeof (struct _node_info)
 
 /**
  * Route entry for routing table
@@ -49,8 +57,8 @@ typedef struct _node *node_t;
  */
 struct _route_entry
 {
-    node_t destination;		/**< Destination */
-    node_t nexthop;		/**< Next hop */
+    node_info_t destination;		/**< Destination */
+    node_info_t nexthop;		/**< Next hop */
     cost_t cost;		/**< Cost */
     unsigned short int ttl;	/**< TTL */
 };
@@ -72,4 +80,3 @@ struct _message_entry
 } message_entry_t;
 
 message_entry_t message[MAXMSGLEN];
-
