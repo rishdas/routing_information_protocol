@@ -38,7 +38,8 @@ struct _node_config
 {
     FILE *fconfig;		/**< Config file stream */
     struct sockaddr_in *inet;	/**< Inet info, including port  */
-    int socket;			/**< UDP socket  */
+    int rsock;			/**< Receive UDP socket  */
+    int ssock;			/**< Send UDP socket */
     cost_t ttl;			/**< Default TTL for routing table entries */
     unsigned int period;	/**< Sending update message period */
     bool_t shorizon;		/**< Using split horizon ? */
@@ -88,6 +89,4 @@ struct _message_entry
 };
 
 typedef struct _message_entry message_entry_t;
-#define message_entry_t_len sizeof (struct _message_entry_t_len)
-
-message_entry_t message[MAXROUTE];
+#define message_entry_t_len sizeof (struct _message_entry)

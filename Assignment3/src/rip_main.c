@@ -151,6 +151,7 @@ int main (int argc, char **argv)
     /*if (node_config->debug)*/
     rip_util_print_routing_table ();
     rip_net_bind_port ();
+    rip_net_send_advertisement ();
 
     return 0;
 }
