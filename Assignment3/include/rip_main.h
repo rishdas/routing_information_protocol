@@ -27,6 +27,7 @@
 #define TRUE      (bool_t )1
 #define MAXROUTE       255
 #define COST_INFINITY  9999
+#define INVALID_HOP_I  -1
 #define MYSELF    "me"
 #define DEF_PERIOD 30
 #define DEF_TTL 3
@@ -75,6 +76,10 @@ struct _route_entry
 
 typedef struct _route_entry *route_entry_t;
 #define route_entry_t_len sizeof (struct _route_entry)
+node_config_t rip_node_config;
+unsigned int rip_routing_table_entry_number;
+route_entry_t routingtable[MAXROUTE];
+
 
 /**
  * Each entry of a message. 
@@ -91,3 +96,22 @@ typedef struct _message_entry message_entry_t;
 #define message_entry_t_len sizeof (struct _message_entry_t_len)
 
 message_entry_t message[MAXROUTE];
+
+typedef struct _route_graph_entry
+{
+    cost_t             cost;
+    unsigned short int ttl;
+} route_graph_entry_t;
+
+typedef route_graph_entry_t*  route_graph_row_t;
+typedef route_graph_entry_t** route_graph_t;
+route_graph_t r_graph;
+
+typedef struct _route_dist_hop
+{
+    cost_t       cost;
+    unsigned int hop_index;
+} route_dist_hop_t;
+typedef route_dist_hop_t* route_dist_hop_vect_t;
+
+route_dist_hop_vect_t dist_hop_vect;

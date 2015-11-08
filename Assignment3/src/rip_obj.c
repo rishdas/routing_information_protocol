@@ -1,5 +1,6 @@
 #include <rip_main.h>
 #include <rip_proto.h>
+#include <rip_routing.h>
 
 void *rip_malloc (size_t l)
 {
@@ -117,5 +118,84 @@ void rip_obj_destroy_route_entry (route_entry_t entry)
     if (entry->nexthop)
 	rip_obj_destroy_node_info (entry->nexthop);
     free (entry);
+    return;
+}
+
+void rip_obj_new_graph()
+{
+    unsigned int no_nodes;
+    unsigned int i = 0, j = 0;
+    no_nodes = rip_routing_table_entry_number+1;
+    if (no_nodes <= 1) {
+	r_graph = NULL;
+	return;
+    }
+    r_graph = (route_graph_t) rip_malloc(no_nodes * sizeof(route_graph_row_t));
+    for (i = 0; i < no_nodes; i++) {
+	r_graph[i] = (route_graph_row_t)
+	    rip_malloc(no_nodes * sizeof(route_graph_entry_t));
+    }
+    /*Initialize Entries*/
+    for (i = 0; i < no_nodes; i++) {
+	for (j = 0; j < no_nodes; j++) {
+	    r_graph[i][j].cost = COST_INFINITY;
+	    r_graph[i][j].ttl = rip_node_config->ttl * rip_node_config->period;
+	}
+    }
+    return;
+}
+
+void rip_obj_set_graph_entry(unsigned int r_index,
+			     unsigned int c_index, cost_t c,
+			     unsigned short int ttl)
+{
+    if (r_graph == NULL){
+	//Log
+	return;
+    }
+    r_graph[r_index][c_index].cost = c;
+    r_graph[r_index][c_index].ttl = ttl;
+    return;
+}
+void rip_obj_destroy_route_graph()
+{
+    unsigned int i = 0;
+    unsigned int no_nodes = rip_routing_table_entry_number + 1;
+    if (r_graph == NULL) {
+	//Log
+	return;
+    }
+    for (i = 0; i <= no_nodes; i++) {
+	if(r_graph[i] == NULL) {
+	    //Log
+	    continue;
+	}
+	free(r_graph[i]);
+    }
+    free(r_graph);
+    return;
+}
+void rip_obj_new_dist_hop_vector()
+{
+    dist_hop_vect =
+	(route_dist_hop_vect_t)rip_malloc((rip_routing_table_entry_number+1)
+					  *sizeof(route_dist_hop_t));
+    return;
+}
+void rip_obj_set_dist_hop_vect_ent(route_dist_hop_vect_t dist_hop_vect,
+				   unsigned int index, cost_t c,
+				   unsigned int hop_index)
+{
+    dist_hop_vect[index].cost = c;
+    dist_hop_vect[index].hop_index = hop_index;
+    return;
+}
+void rip_obj_destroy_dist_hop_vector(route_dist_hop_vect_t dist_hop_vect)
+{
+    if (dist_hop_vect == NULL) {
+	//Log
+	return;
+    }
+    free(dist_hop_vect);
     return;
 }
