@@ -39,7 +39,8 @@ struct _node_config
 {
     FILE *fconfig;		/**< Config file stream */
     struct sockaddr_in *inet;	/**< Inet info, including port  */
-    int socket;			/**< UDP socket  */
+    int rsock;			/**< Receive UDP socket  */
+    int ssock;			/**< Send UDP socket */
     cost_t ttl;			/**< Default TTL for routing table entries */
     unsigned int period;	/**< Sending update message period */
     bool_t shorizon;		/**< Using split horizon ? */
@@ -115,3 +116,4 @@ typedef struct _route_dist_hop
 typedef route_dist_hop_t* route_dist_hop_vect_t;
 
 route_dist_hop_vect_t dist_hop_vect;
+
