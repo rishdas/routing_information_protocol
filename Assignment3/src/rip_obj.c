@@ -43,7 +43,7 @@ void rip_obj_set_node_config_inet (char *p, char *i)
     raw.ai_flags = AI_PASSIVE;
 
     /* get the network byte order representation */    
-    getaddrinfo (i, p, &raw,&baked);
+    getaddrinfo (i, p, &raw, &baked);
     rip_node_config->inet = (struct sockaddr_in *)baked->ai_addr;
 
     return;
@@ -93,7 +93,7 @@ route_entry_t rip_obj_new_route_entry (void)
 {
     route_entry_t ret;
     
-    ret = (route_entry_t)rip_malloc (route_entry_t_len);
+    ret = (route_entry_t) rip_malloc (route_entry_t_len);
     return ret;
 }
 

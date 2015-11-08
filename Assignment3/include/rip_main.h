@@ -28,6 +28,8 @@
 #define MAXROUTE       255
 #define COST_INFINITY  9999
 #define MYSELF    "me"
+#define DEF_PERIOD 30
+#define DEF_TTL 3
 
 /**
  * Defines node's configuration

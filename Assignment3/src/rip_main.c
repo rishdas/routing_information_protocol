@@ -70,8 +70,8 @@ void rip_main_parseArgs (int c, char **v)
     char *ip = NULL;
 
     /* default config values */
-    rip_node_config->period = 30;
-    rip_node_config->ttl = 3;
+    rip_node_config->period = DEF_PERIOD;
+    rip_node_config->ttl = DEF_TTL;
     rip_node_config->debug = TRUE;
     
     opterr = 0;
@@ -109,20 +109,20 @@ void rip_main_parseArgs (int c, char **v)
 	fprintf (stderr,"%s: must inform config file!\n",v[0]);
 	exit (1);
     }
-    if (port && ip)
-	rip_obj_set_node_config_inet (port,ip);
-    else{
-	fprintf (stderr,"%s: must inform UDP port AND IP address!\n",v[0]);
+    if (port && ip) {
+	rip_obj_set_node_config_inet (port, ip);
+    } else {
+	fprintf (stderr, "%s: must inform UDP port AND IP address!\n", v[0]);
 	exit (1);
     }    
 /* How to access inet information (IP address and port) in 
    rip_node_config->inet
    ***
-    char b[INET_ADDRSTRLEN];
-    printf ("Port = %d ", ntohs (rip_node_config->inet->sin_port));
-    inet_ntop (AF_INET, &(rip_node_config->inet->sin_addr), b,
-	       INET_ADDRSTRLEN);
-    printf ("IP = %s\n",b);
+   char b[INET_ADDRSTRLEN];
+   printf ("Port = %d ", ntohs (rip_node_config->inet->sin_port));
+   inet_ntop (AF_INET, &(rip_node_config->inet->sin_addr), b,
+   INET_ADDRSTRLEN);
+   printf ("IP = %s\n",b);
 */
     rip_main_insert_entry_table_myself ();
     if ((rip_node_config->fconfig = fopen (fconfig, "r")) == NULL ){

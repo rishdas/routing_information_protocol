@@ -8,15 +8,16 @@ void rip_util_print_routing_table (void)
     route_entry_t entry;
  
     fprintf (stdout,"Initial routing table:\n"
-	"Node\tNext Hop\t\tCost\tTTL\n");
+	     "Node\tNext Hop\t\tCost\tTTL\n");
     for (i = 0; i < rip_routing_table_entry_number; i++){
 	memset (buff,0,INET_ADDRSTRLEN);
 	entry = routingtable[i];
-	if (entry->nexthop != NULL)
+	if (entry->nexthop != NULL) {
 	    inet_ntop (AF_INET,&(entry->nexthop->inet->sin_addr), 
 		       buff,INET_ADDRSTRLEN);
-	else 
+	} else { 
 	    strcpy (buff, "  Null  ");
+	}
 	fprintf (stdout,"%s\t%s  (%s)\t%d\t%d\n", entry->destination->name,
 		 (entry->nexthop) ? 
 		 entry->nexthop->name : "Null", buff, entry->cost, 
