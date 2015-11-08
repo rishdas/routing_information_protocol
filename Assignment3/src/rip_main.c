@@ -3,6 +3,7 @@
 
 node_config_t rip_node_config;
 unsigned int rip_routing_table_entry_number;
+route_entry_t routingtable[MAXROUTE];
 
 void rip_main_insert_entry_table_myself (void)
 {

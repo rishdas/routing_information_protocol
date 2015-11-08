@@ -1,7 +1,10 @@
-/* main.c */
+/* rip_main.c */
+void rip_main_insert_entry_table_myself (void);
 void rip_main_parseArgs (int , char **);
+int rip_main_parse_config (void);
 
-/* obj.c */
+
+/* rip_obj.c */
 void *rip_malloc (size_t );
 node_config_t rip_obj_new_node_config (void);
 void rip_obj_set_node_config (node_config_t, FILE *, 
@@ -19,7 +22,14 @@ void rip_obj_set_route_entry (route_entry_t, node_info_t,
 			      unsigned short int);
 void rip_obj_destroy_route_entry (route_entry_t);
 
+/* rip_util.c */
+void rip_util_print_routing_table (void);
+
+/* rip_net.c */
+void rip_net_bind_port (void);
 
 /* global variables */
 extern node_config_t rip_node_config;
 extern unsigned int rip_routing_table_entry_number;
+extern route_entry_t routingtable[];
+

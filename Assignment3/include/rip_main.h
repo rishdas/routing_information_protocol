@@ -76,8 +76,6 @@ struct _route_entry
 typedef struct _route_entry *route_entry_t;
 #define route_entry_t_len sizeof (struct _route_entry)
 
-route_entry_t routingtable[MAXROUTE];
-
 /**
  * Each entry of a message. 
  * It is not a pointer because its desirable to be in-memory aligned.
