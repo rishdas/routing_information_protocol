@@ -6,8 +6,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
-#include <main.h>
+//#include <main.h>
 
 int main(int argc, char**argv)
 {
@@ -42,7 +43,7 @@ int main(int argc, char**argv)
 
       sendto(sockfd,sendline,22,0,
              (struct sockaddr *)&servaddr,sizeof(servaddr));
-      n=recvfrom(sockfd,recvline,10000,0,NULL,NULL);
+/*      n=recvfrom(sockfd,recvline,10000,0,NULL,NULL);
       recvline[n]=0;
       fputs(recvline,stdout);
 /*

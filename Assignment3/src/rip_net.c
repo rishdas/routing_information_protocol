@@ -1,21 +1,25 @@
 #include <rip_main.h>
 #include <rip_proto.h>
 
+static void rip_net_send_message (message_entry_t *, int);
+
 static void rip_net_send_message (message_entry_t *me, int ms)
 {
     int i;
-    char buff[INET_ADDRSTRLEN];
-    
+ 
     assert (me != NULL);
-    for (i = 0; i < ms; i++) {
-	memset (buff, 0, INET_ADDRSTRLEN);
-	
-	inet_ntop (AF_INET, &(me[i].dest_addr), buff, INET_ADDRSTRLEN);
-       
-	fprintf (stderr,"message entry: IP = %s cost = %d\n",
-		 buff,me[i].cost);
-    }
     
+    for (i = 0; i < rip_routing_table_entry_number; i++) {
+	if (routingtable[i]->cost == 1) {
+	    if ((sendto (rip_node_config->ssock,
+			 me, ms * message_entry_t_len, 0,
+			 (struct sockaddr *)routingtable[i]->destination->inet,
+			 sizeof (struct sockaddr))) < 0) {
+		perror ("sendto:");
+		exit(1);
+	    };
+	};
+    };
     return;
 }
 

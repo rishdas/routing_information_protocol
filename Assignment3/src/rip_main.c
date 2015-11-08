@@ -37,16 +37,25 @@ int rip_main_parse_config (void)
 	l = line;
 	info = rip_obj_new_node_info ();
 	entry = rip_obj_new_route_entry ();
+	/* get name from first column */
 	tk = strsep (&l, " ");
 	info->name = strdup (tk);
+	/* get IP from second column, and populate node_info_t->inet also */
+	/* with address family and destination port */
 	tk = strsep (&l, " ");
 	inet_pton(AF_INET, tk, &(info->inet->sin_addr));
+	info->inet->sin_family = AF_INET;
+	info->inet->sin_port = rip_node_config->inet->sin_port;
+	/* get yes/no. If 'yes', add node as destination and nexthop  */
+	/* with cost = 1 */
 	tk = strsep (&l, "\n");
 	if (!strcmp (tk, "yes")){
 	    entry->destination = info;
 	    entry->nexthop = info;
 	    entry->cost = 1;
 	}
+	/* If 'no', add node only as destination (nexthop is NULL), and */
+	/* cost to infinity */
 	else if (!strcmp (tk,"no")){
 	    entry->destination = info;
 	    entry->cost = COST_INFINITY;
