@@ -1,5 +1,6 @@
 #include <rip_main.h>
 #include <rip_proto.h>
+#include <rip_routing.h>
 
 
 void rip_main_insert_entry_table_myself (void)
@@ -22,7 +23,19 @@ void rip_main_insert_entry_table_myself (void)
     routingtable[rip_routing_table_entry_number++] = entry;
     return;
 }
+void rip_main_init_graph_distance_vector()
+{
+    unsigned int i = 0;
+    unsigned int no_nodes = rip_routing_table_entry_number + 1;
 
+    rip_routing_init_graph();
+    for (i = 0; i < no_nodes; i++) {
+	rip_obj_set_graph_entry(0, i,
+				routingtable[i]->cost, routingtable[i]->ttl);
+	rip_obj_set_dist_hop_vect_ent(i , routingtable[i]->cost, 0);
+    }
+    return;
+}
 int rip_main_parse_config (void)
 {
     char line[128];
@@ -64,12 +77,12 @@ int rip_main_parse_config (void)
 	entry->ttl = rip_node_config->ttl * rip_node_config->period;
 	routingtable[rip_routing_table_entry_number++] = entry;
     }
-
+    rip_main_init_graph_distance_vector();
     fclose (rip_node_config->fconfig);
     return 0;
 }
 
-void rip_main_parseArgs (int c, char **v) 
+void rip_main_parse_args (int c, char **v) 
 {
     int o;
     char *fconfig = NULL;
@@ -153,7 +166,7 @@ int main (int argc, char **argv)
 {
 
     rip_node_config = rip_obj_new_node_config ();
-    rip_main_parseArgs (argc, argv);
+    rip_main_parse_args (argc, argv);
     /*if (node_config->debug)*/
     rip_util_print_routing_table ();
     rip_net_bind_port ();

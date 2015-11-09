@@ -182,8 +182,7 @@ void rip_obj_new_dist_hop_vector()
 					  *sizeof(route_dist_hop_t));
     return;
 }
-void rip_obj_set_dist_hop_vect_ent(route_dist_hop_vect_t dist_hop_vect,
-				   unsigned int index, cost_t c,
+void rip_obj_set_dist_hop_vect_ent(unsigned int index, cost_t c,
 				   unsigned int hop_index)
 {
     dist_hop_vect[index].cost = c;

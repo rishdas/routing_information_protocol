@@ -15,6 +15,7 @@ void rip_routing_init_graph()
     //set the self
     rip_obj_set_dist_hop_vect_ent(dist_hop_vect, 0,
 				  0, 0);
+    return;
 }
 void rip_routing_relax_edges(unsigned int r_index, unsigned int c_index)
 {

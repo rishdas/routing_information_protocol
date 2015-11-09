@@ -94,7 +94,7 @@ struct _message_entry
 };
 
 typedef struct _message_entry message_entry_t;
-#define message_entry_t_len sizeof (struct _message_entry_t_len)
+#define message_entry_t_len sizeof (struct _message_entry)
 
 message_entry_t message[MAXROUTE];
 
