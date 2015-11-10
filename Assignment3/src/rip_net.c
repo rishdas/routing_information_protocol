@@ -28,8 +28,8 @@ void rip_net_bind_port (void)
     if ((rip_node_config->rsock = socket (AF_INET, SOCK_DGRAM,0)) < 0){
 	perror ("receive socket");
 	exit (1);
-    }
-    if ((bind (rip_node_config->rsock, 
+    } 
+   if ((bind (rip_node_config->rsock, 
 	       (struct sockaddr *)rip_node_config->inet,
 	       sizeof (struct sockaddr))) < 0) {
 	perror ("bind");
@@ -61,3 +61,13 @@ void rip_net_send_advertisement (void)
     rip_net_send_message (message, ms);
     return;
 }
+
+char *rip_net_inet_ntop (struct in_addr in)
+{
+    char *ret;
+    
+    ret = (char *) rip_malloc (INET_ADDRSTRLEN);
+    inet_ntop (AF_INET, &in, ret, INET_ADDRSTRLEN);
+    return ret;
+}
+
