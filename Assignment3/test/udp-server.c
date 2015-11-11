@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include <rip_main.h>
+#include <rip_proto.h>
 
 int main(int argc, char**argv)
 {
@@ -25,9 +26,11 @@ int main(int argc, char**argv)
        len = sizeof(cliaddr);
        n = recvfrom(sockfd,message, MAXROUTE * message_entry_t_len, 0,
 		    (struct sockaddr *)&cliaddr,&len);
+       printf ("Message from IP: %s\n",
+	       rip_net_inet_ntop (cliaddr.sin_addr));
        recv_number = n / message_entry_t_len;
        for (i = 0; i < recv_number; i++) {
-	   printf ("IP = %s Cost = %d\n", 
+	   printf ("\tIP = %s Cost = %d\n", 
 		   rip_net_inet_ntop (message[i].dest_addr), message[i].cost);
        }
    }
