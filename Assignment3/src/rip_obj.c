@@ -133,7 +133,7 @@ void rip_obj_new_graph()
 {
     unsigned int no_nodes;
     unsigned int i = 0, j = 0;
-    no_nodes = rip_routing_table_entry_number+1;
+    no_nodes = rip_routing_table_entry_number;
     if (no_nodes <= 1) {
 	r_graph = NULL;
 	return;
@@ -168,7 +168,7 @@ void rip_obj_set_graph_entry(unsigned int r_index,
 void rip_obj_destroy_route_graph()
 {
     unsigned int i = 0;
-    unsigned int no_nodes = rip_routing_table_entry_number + 1;
+    unsigned int no_nodes = rip_routing_table_entry_number;
     if (r_graph == NULL) {
 	//Log
 	return;

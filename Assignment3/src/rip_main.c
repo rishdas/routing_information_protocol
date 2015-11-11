@@ -26,7 +26,7 @@ void rip_main_insert_entry_table_myself (void)
 void rip_main_init_graph_distance_vector()
 {
     unsigned int i = 0;
-    unsigned int no_nodes = rip_routing_table_entry_number + 1;
+    unsigned int no_nodes = rip_routing_table_entry_number;
 
     rip_routing_init_graph();
     for (i = 0; i < no_nodes; i++) {

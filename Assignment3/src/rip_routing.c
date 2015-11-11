@@ -9,12 +9,10 @@ void rip_routing_init_graph()
     rip_obj_new_graph();
     rip_obj_new_dist_hop_vector();
     for (i = 0; i < no_nodes; i++) {
-	rip_obj_set_dist_hop_vect_ent(dist_hop_vect, i,
-				      COST_INFINITY, INVALID_HOP_I);
+	rip_obj_set_dist_hop_vect_ent(i, COST_INFINITY, INVALID_HOP_I);
     }
     //set the self
-    rip_obj_set_dist_hop_vect_ent(dist_hop_vect, 0,
-				  0, 0);
+    rip_obj_set_dist_hop_vect_ent(0, 0, 0);
     return;
 }
 void rip_routing_relax_edges(unsigned int r_index, unsigned int c_index)
