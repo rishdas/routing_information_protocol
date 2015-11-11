@@ -13,7 +13,7 @@ void rip_main_insert_entry_table_myself (void)
     myself = rip_obj_new_node_info ();
     entry = rip_obj_new_route_entry ();
     
-    myself->name = strdup (MYSELF);
+    myself->name = rip_net_inet_ntop (rip_node_config->inet->sin_addr);
     myself->inet = rip_node_config->inet;
     entry->destination = myself;
     entry->nexthop = myself;
@@ -85,13 +85,14 @@ void rip_main_parse_args (int c, char **v)
     int o;
     char *fconfig = NULL;
     char *port = NULL;
-    char *ip = NULL;
+    char *iface = NULL;
 
     /* default config values */
     rip_node_config->period = DEF_PERIOD;
     rip_node_config->ttl = DEF_TTL;
     rip_node_config->debug = TRUE;
-    
+    iface = strdup ("eth0");
+
     opterr = 0;
     
     while ((o = getopt (c, v, "c:u:t:i:p:sd")) != -1) {
@@ -101,8 +102,9 @@ void rip_main_parse_args (int c, char **v)
 	    assert (fconfig != NULL);
 	    break;
 	case 'i':
-	    ip = strdup (optarg);
-	    assert (ip != NULL);
+	    free (iface);
+	    iface = strdup (optarg);
+	    assert (iface != NULL);
 	    break;
 	case 'u':
 	    port = strdup (optarg);
@@ -127,10 +129,10 @@ void rip_main_parse_args (int c, char **v)
 	fprintf (stderr,"%s: must inform config file!\n",v[0]);
 	exit (1);
     }
-    if (port && ip) {
-	rip_obj_set_node_config_inet (port, ip);
+    if (port) {
+	rip_obj_set_node_config_inet (port, iface);
     } else {
-	fprintf (stderr, "%s: must inform UDP port AND IP address!\n", v[0]);
+	fprintf (stderr, "%s: must inform UDP port !!\n", v[0]);
 	exit (1);
     }    
 /* How to access inet information (IP address and port) in 

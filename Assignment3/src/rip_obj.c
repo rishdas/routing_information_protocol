@@ -18,6 +18,7 @@ node_config_t rip_obj_new_node_config (void)
     node_config_t ret;
     
     ret = (node_config_t) rip_malloc (node_config_t_len);
+    ret->inet = (struct sockaddr_in *) rip_malloc (sizeof (struct sockaddr_in));
     return ret;
 }
 
@@ -36,17 +37,24 @@ void rip_obj_set_node_config (node_config_t conf, FILE *f,
 
 void rip_obj_set_node_config_inet (char *p, char *i)
 {
-    struct addrinfo raw, *baked;
-    
-    memset (&raw, 0, sizeof (struct addrinfo));
-    raw.ai_family = AF_INET;
-    raw.ai_socktype = SOCK_DGRAM;
-    raw.ai_flags = AI_PASSIVE;
+    struct ifaddrs *ifarr, *ifp;
+    struct sockaddr_in *in;
 
-    /* get the network byte order representation */    
-    getaddrinfo (i, p, &raw, &baked);
-    rip_node_config->inet = (struct sockaddr_in *)baked->ai_addr;
-
+    getifaddrs (&ifarr);
+    for (ifp = ifarr; ifp; ifp = ifp->ifa_next) {
+	in = (struct sockaddr_in *)ifp->ifa_addr;
+	if (AF_INET != in->sin_family) {
+	    continue;
+	}
+	if (strcmp (ifp->ifa_name,i) != 0) {
+	    continue;
+	}
+	rip_node_config->inet->sin_addr.s_addr = in->sin_addr.s_addr;
+	rip_node_config->inet->sin_family = AF_INET;
+	rip_node_config->inet->sin_port = htons (atoi (p));
+	
+	break;
+    }
     return;
 }
 
