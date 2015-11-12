@@ -2,6 +2,7 @@
 void rip_main_insert_entry_table_myself (void);
 void rip_main_parseArgs (int , char **);
 int rip_main_parse_config (void);
+int rip_main_loop (void);
 
 
 /* rip_obj.c */

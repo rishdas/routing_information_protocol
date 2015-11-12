@@ -161,6 +161,13 @@ void rip_main_parse_args (int c, char **v)
     return;
 }
 
+int rip_main_loop (void) 
+{
+       rip_net_send_advertisement ();
+
+       return -1;
+}
+
 
 int main (int argc, char **argv)
 {
@@ -175,8 +182,12 @@ int main (int argc, char **argv)
 	perror ("pthread_create");
 	exit (1);
     }
-    
-    rip_net_send_advertisement ();
+
+    while (TRUE) {
+	if (rip_main_loop () < 0) {
+	    break;
+	}
+    }
 
     return 0;
 }
