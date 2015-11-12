@@ -5,6 +5,7 @@ INCDIR=../include
 SRCDIR=./src
 PROG = rip
 CFLAGS=-I. -I$(INCDIR) -ggdb -gdwarf-2 
+LDFLAGS=-lpthread
 CC=gcc
 
 all: $(PROG)

@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <ifaddrs.h>
-
+#include <pthread.h>
 
 #define cost_t    unsigned int
 #define bool_t    char

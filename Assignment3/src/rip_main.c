@@ -164,12 +164,18 @@ void rip_main_parse_args (int c, char **v)
 
 int main (int argc, char **argv)
 {
+    pthread_t rip_up_thread;
 
     rip_node_config = rip_obj_new_node_config ();
     rip_main_parse_args (argc, argv);
     /*if (node_config->debug)*/
     rip_util_print_routing_table ();
     rip_net_bind_port ();
+    if ((pthread_create (&rip_up_thread, NULL, rip_up, NULL)) != 0) {
+	perror ("pthread_create");
+	exit (1);
+    }
+    
     rip_net_send_advertisement ();
 
     return 0;

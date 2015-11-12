@@ -30,6 +30,9 @@ void rip_net_bind_port (void);
 void rip_net_send_advertisement (void);
 char *rip_net_inet_ntop (struct in_addr );
 
+/* rip_up.c */
+void *rip_up(void *);
+
 /* global variables */
 extern node_config_t rip_node_config;
 extern unsigned int rip_routing_table_entry_number;
