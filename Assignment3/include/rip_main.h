@@ -26,6 +26,7 @@
 #define FALSE     (bool_t )0
 #define TRUE      (bool_t )1
 #define MAXROUTE       255
+#define MAXNODE        255
 #define COST_INFINITY  9999
 #define INVALID_HOP_I  -1
 #define MYSELF    "me"
@@ -69,8 +70,8 @@ typedef struct _node_info *node_info_t;
  */
 struct _route_entry
 {
-    node_info_t destination;		/**< Destination */
-    node_info_t nexthop;		/**< Next hop */
+    node_info_t destination;	/**< Destination */
+    node_info_t nexthop;	/**< Next hop */
     cost_t cost;		/**< Cost */
     unsigned short int ttl;	/**< TTL */
 };
@@ -81,6 +82,19 @@ node_config_t rip_node_config;
 unsigned int rip_routing_table_entry_number;
 route_entry_t routingtable[MAXROUTE];
 
+/**
+ * Advertisement received from neighbor. This struct is 
+ * populated from message[]
+ */
+struct _advert_entry
+{
+    node_info_t neighbor;		/**< Advertisement sender */
+    route_entry_t neightable[MAXROUTE]; /**< Advertised table */
+};
+
+typedef struct _advert_entry *advert_entry_t;
+#define advert_entry_t_len sizeof (struct _advert_entry)
+advert_entry_t adtable[MAXNODE];
 
 /**
  * Each entry of a message. 
@@ -95,8 +109,6 @@ struct _message_entry
 
 typedef struct _message_entry message_entry_t;
 #define message_entry_t_len sizeof (struct _message_entry)
-
-message_entry_t message[MAXROUTE];
 
 typedef struct _route_graph_entry
 {
@@ -117,3 +129,5 @@ typedef route_dist_hop_t* route_dist_hop_vect_t;
 
 route_dist_hop_vect_t dist_hop_vect;
 
+/* Mutex */
+pthread_mutex_t lock;

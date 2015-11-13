@@ -163,9 +163,35 @@ void rip_main_parse_args (int c, char **v)
 
 int rip_main_loop (void) 
 {
-       rip_net_send_advertisement ();
+    int ret = 0;
+    static int cnt = 0;
+    message_entry_t message[MAXROUTE];
+    node_info_t node;
 
-       return -1;
+    /* sender node information */
+    node = rip_obj_new_node_info ();
+
+    while (TRUE) {
+
+	node->name = NULL;
+	memset (message, 0, MAXROUTE * message_entry_t_len);
+	if ((rip_net_recv_advertisement (node,message)) < 0) {
+	    ret = -1;
+	    break;
+	}
+	/* "push" received advertisement to rip_up() through */
+	/* adtable[], from the second loop and so */
+	if (node->name && cnt) {
+	    rip_obj_push_recv_advertisement (node,message);
+	    free (node->name);
+	}
+	/* if its the first interation, send an advertisement */
+	/* subsequent advertisement might be sent by rip_up() */
+	if (cnt++ == 0) {
+	    rip_net_send_advertisement ();
+	}
+    }
+    return ret;
 }
 
 
@@ -174,20 +200,23 @@ int main (int argc, char **argv)
     pthread_t rip_up_thread;
 
     rip_node_config = rip_obj_new_node_config ();
+
     rip_main_parse_args (argc, argv);
+
     /*if (node_config->debug)*/
     rip_util_print_routing_table ();
+
+    /* Initialize adtable[] */
+    memset (adtable, 0, MAXNODE * advert_entry_t_len);    
+
     rip_net_bind_port ();
+
     if ((pthread_create (&rip_up_thread, NULL, rip_up, NULL)) != 0) {
 	perror ("pthread_create");
 	exit (1);
     }
 
-    while (TRUE) {
-	if (rip_main_loop () < 0) {
-	    break;
-	}
-    }
+    rip_main_loop ();
 
     return 0;
 }

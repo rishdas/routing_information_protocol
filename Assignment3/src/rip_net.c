@@ -62,6 +62,36 @@ void rip_net_send_advertisement (void)
     return;
 }
 
+int rip_net_recv_advertisement (node_info_t nd, message_entry_t *me) 
+{
+    int ret = 0;
+    int numfd = 0;
+    static int cnt = 2;
+    struct sockaddr_in nodeaddr;
+    socklen_t nodeaddr_len;
+    fd_set socket_set;
+    struct timeval timeout;
+
+    FD_ZERO (&socket_set);
+    FD_SET (server_info->socket, &socket_set);
+    cnt = (cnt <= 1) ? 1 : cnt;
+    timeout.tv_sec = node_config->period / cnt--;
+    timeout.tv_usec = 0;
+
+   numfd = select (server_info->socket+1, &socket_set, NULL, NULL, 
+		    &timeout);
+    
+    ret = recvfrom (node_config->rsock, me, MAXROUTE * message_entry_t_len,
+		    0, (struct sockaddr_in *)&nodeaddr, &nodeaddr_len);
+
+    nd->name = rip_net_inet_ntop (nodeaddr.sin_addr);
+    nd->inet->sin_addr.s_addr = nodeaddr.sin_addr.s_addr;
+    nd->inet->sin_port = htons (8080);
+    nd->inet->sin_family = AF_INET;
+    
+    return ret;
+}
+
 char *rip_net_inet_ntop (struct in_addr in)
 {
     char *ret;

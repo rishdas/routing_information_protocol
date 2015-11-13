@@ -38,4 +38,5 @@ void *rip_up(void *);
 extern node_config_t rip_node_config;
 extern unsigned int rip_routing_table_entry_number;
 extern route_entry_t routingtable[];
-
+extern advert_entry_t adtable[];
+extern pthread_mutex_t lock;
