@@ -151,7 +151,8 @@ void rip_obj_push_recv_advertisement (node_info_t n, message_entry_t *me, int me
 {
     int i;
     
-    /* Attention: the rip_up() thread must clean up adtable ( memset(adtable, 0,....) ) */
+    /* Attention: the rip_up() thread must clean up adtable ( memset(&adtable, 0,....) ) */
+    /* after fetching information from it */
     pthread_mutex_lock (&lock);
     adtable.neighbor = n;
     for (i = 0; i < me_len;  i++) {

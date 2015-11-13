@@ -208,7 +208,7 @@ int main (int argc, char **argv)
     rip_util_print_routing_table ();
 
     /* Initialize adtable */
-    memset (&adtable, 0, MAXNODE * advert_entry_t_len);    
+    memset (&adtable, 0, advert_entry_t_len);
 
     rip_net_bind_port ();
 
