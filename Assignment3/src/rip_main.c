@@ -189,7 +189,7 @@ int rip_main_loop (void)
 	}
 	/* "push" received advertisement to rip_up() through */
 	/* adtable[], from the second loop and so */
-	if (node->name && cnt) {
+	if (node->name) {
 	    rip_obj_push_recv_advertisement (node,message,message_entry_num);
 	}
 	/* if its the first interation, send an advertisement */
