@@ -166,6 +166,7 @@ int rip_main_loop (void)
     int ret = 0;
     static int cnt = 0;
     message_entry_t message[MAXROUTE];
+    int message_entry_num;
     node_info_t node;
 
     /* sender node information */
@@ -175,14 +176,14 @@ int rip_main_loop (void)
 
 	node->name = NULL;
 	memset (message, 0, MAXROUTE * message_entry_t_len);
-	if ((rip_net_recv_advertisement (node,message)) < 0) {
+	if ((message_entry_num = rip_net_recv_advertisement (node,message)) < 0) {
 	    ret = -1;
 	    break;
 	}
 	/* "push" received advertisement to rip_up() through */
 	/* adtable[], from the second loop and so */
 	if (node->name && cnt) {
-	    rip_obj_push_recv_advertisement (node,message);
+	    rip_obj_push_recv_advertisement (node,message,message_entry_num);
 	    free (node->name);
 	}
 	/* if its the first interation, send an advertisement */
@@ -206,8 +207,8 @@ int main (int argc, char **argv)
     /*if (node_config->debug)*/
     rip_util_print_routing_table ();
 
-    /* Initialize adtable[] */
-    memset (adtable, 0, MAXNODE * advert_entry_t_len);    
+    /* Initialize adtable */
+    memset (&adtable, 0, MAXNODE * advert_entry_t_len);    
 
     rip_net_bind_port ();
 

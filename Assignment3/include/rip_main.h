@@ -7,6 +7,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -84,7 +85,7 @@ route_entry_t routingtable[MAXROUTE];
 
 /**
  * Advertisement received from neighbor. This struct is 
- * populated from message[]
+ * populated from message. advert_entry_t isn't a pointer
  */
 struct _advert_entry
 {
@@ -92,9 +93,9 @@ struct _advert_entry
     route_entry_t neightable[MAXROUTE]; /**< Advertised table */
 };
 
-typedef struct _advert_entry *advert_entry_t;
+typedef struct _advert_entry advert_entry_t;
 #define advert_entry_t_len sizeof (struct _advert_entry)
-advert_entry_t adtable[MAXNODE];
+advert_entry_t adtable;
 
 /**
  * Each entry of a message. 

@@ -29,6 +29,7 @@ void rip_net_bind_port (void)
 	perror ("receive socket");
 	exit (1);
     } 
+  fcntl (rip_node_config->rsock, F_SETFL, O_NONBLOCK);
    if ((bind (rip_node_config->rsock, 
 	       (struct sockaddr *)rip_node_config->inet,
 	       sizeof (struct sockaddr))) < 0) {
@@ -64,8 +65,7 @@ void rip_net_send_advertisement (void)
 
 int rip_net_recv_advertisement (node_info_t nd, message_entry_t *me) 
 {
-    int ret = 0;
-    int numfd = 0;
+    int ret, numfd, entry_len;
     static int cnt = 2;
     struct sockaddr_in nodeaddr;
     socklen_t nodeaddr_len;
@@ -73,23 +73,31 @@ int rip_net_recv_advertisement (node_info_t nd, message_entry_t *me)
     struct timeval timeout;
 
     FD_ZERO (&socket_set);
-    FD_SET (server_info->socket, &socket_set);
+    FD_SET (rip_node_config->rsock, &socket_set);
+    /* First time run: timeout = (period/2) */
+    /* Second time: timeout = period */
     cnt = (cnt <= 1) ? 1 : cnt;
-    timeout.tv_sec = node_config->period / cnt--;
+    timeout.tv_sec = rip_node_config->period / cnt--;
     timeout.tv_usec = 0;
 
-   numfd = select (server_info->socket+1, &socket_set, NULL, NULL, 
-		    &timeout);
-    
-    ret = recvfrom (node_config->rsock, me, MAXROUTE * message_entry_t_len,
-		    0, (struct sockaddr_in *)&nodeaddr, &nodeaddr_len);
+    ret = numfd = 0;
+    entry_len = message_entry_t_len;
+
+    if ((numfd = select (rip_node_config->rsock+1, &socket_set, NULL, NULL, 
+			 &timeout)) < 0) {
+	return -1;
+    }
+
+   if (numfd) {
+    ret = recvfrom (rip_node_config->rsock, me, MAXROUTE * entry_len,
+		    0, (struct sockaddr *)&nodeaddr, &nodeaddr_len);
 
     nd->name = rip_net_inet_ntop (nodeaddr.sin_addr);
-    nd->inet->sin_addr.s_addr = nodeaddr.sin_addr.s_addr;
-    nd->inet->sin_port = htons (8080);
-    nd->inet->sin_family = AF_INET;
-    
-    return ret;
+    rip_obj_set_inet (nd->inet, &nodeaddr);
+   }
+
+   /* return the number of message_entry in the received message */
+   return (ret/entry_len) ;
 }
 
 char *rip_net_inet_ntop (struct in_addr in)
