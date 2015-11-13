@@ -156,6 +156,7 @@ void rip_obj_push_recv_advertisement (node_info_t n, message_entry_t *me, int me
     /* after fetching information from it */
     pthread_mutex_lock (&lock);
     adtable.neighbor = n;
+    printf ("adtable.neighbor->name == %s\n",adtable.neighbor->name);
     for (i = 0; i < me_len;  i++) {
 	adtable.neightable[i] = rip_obj_new_route_entry ();
 	adtable.neightable[i]->destination = rip_obj_new_node_info ();
@@ -164,7 +165,8 @@ void rip_obj_push_recv_advertisement (node_info_t n, message_entry_t *me, int me
 	adtable.neightable[i]->nexthop = NULL; /* not used here */
 	adtable.neightable[i]->cost = me[i].cost;
     }
-    pthread_mutex_lock (&lock);
+    adtable.ready = TRUE;
+    pthread_mutex_unlock (&lock);
 
     return;
 }

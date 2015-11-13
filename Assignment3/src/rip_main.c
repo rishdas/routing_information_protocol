@@ -174,6 +174,13 @@ int rip_main_loop (void)
 
     while (TRUE) {
 
+	pthread_mutex_lock (&lock);
+	if (adtable.ready) { /* TRUE: the thread didn't read the adverstisement */
+	    pthread_mutex_unlock (&lock);	
+	    continue;
+	}
+	adtable.ready = FALSE;
+	pthread_mutex_unlock (&lock);	
 	node->name = NULL;
 	memset (message, 0, MAXROUTE * message_entry_t_len);
 	if ((message_entry_num = rip_net_recv_advertisement (node,message)) < 0) {
@@ -184,7 +191,6 @@ int rip_main_loop (void)
 	/* adtable[], from the second loop and so */
 	if (node->name && cnt) {
 	    rip_obj_push_recv_advertisement (node,message,message_entry_num);
-	    free (node->name);
 	}
 	/* if its the first interation, send an advertisement */
 	/* subsequent advertisement might be sent by rip_up() */
@@ -209,6 +215,7 @@ int main (int argc, char **argv)
 
     /* Initialize adtable */
     memset (&adtable, 0, advert_entry_t_len);
+    adtable.ready = FALSE;
 
     rip_net_bind_port ();
 

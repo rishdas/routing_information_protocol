@@ -89,11 +89,12 @@ int rip_net_recv_advertisement (node_info_t nd, message_entry_t *me)
     }
 
    if (numfd) {
-    ret = recvfrom (rip_node_config->rsock, me, MAXROUTE * entry_len,
-		    0, (struct sockaddr *)&nodeaddr, &nodeaddr_len);
+       nodeaddr_len = sizeof (struct sockaddr_in);       
+       ret = recvfrom (rip_node_config->rsock, me, MAXROUTE * entry_len,
+		       0, (struct sockaddr *)&nodeaddr, &nodeaddr_len);
 
-    nd->name = rip_net_inet_ntop (nodeaddr.sin_addr);
-    rip_obj_set_inet (nd->inet, &nodeaddr);
+       nd->name = rip_net_inet_ntop (nodeaddr.sin_addr);
+       rip_obj_set_inet (nd->inet, &nodeaddr);
    }
 
    /* return the number of message_entry in the received message */
