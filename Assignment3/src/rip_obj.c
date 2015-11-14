@@ -18,7 +18,8 @@ node_config_t rip_obj_new_node_config (void)
     node_config_t ret;
     
     ret = (node_config_t) rip_malloc (node_config_t_len);
-    ret->inet = (struct sockaddr_in *) rip_malloc (sizeof (struct sockaddr_in));
+    ret->inet =
+	(struct sockaddr_in *) rip_malloc (sizeof (struct sockaddr_in));
     return ret;
 }
 
@@ -147,11 +148,13 @@ void rip_obj_destroy_route_entry (route_entry_t entry)
     return;
 }
 
-void rip_obj_push_recv_advertisement (node_info_t n, message_entry_t *me, int me_len) 
+void rip_obj_push_recv_advertisement (node_info_t n, message_entry_t *me,
+				      int me_len) 
 {
     int i;
     
-    /* Attention: the rip_up() thread must free adtable members and clean up adtable 
+    /* Attention: the rip_up() thread must free adtable members*/
+    /* and clean up adtable*/ 
     /* ( memset(&adtable, 0,....) ) */
     /* after fetching information from it */
     pthread_mutex_lock (&lock);
@@ -159,8 +162,10 @@ void rip_obj_push_recv_advertisement (node_info_t n, message_entry_t *me, int me
     for (i = 0; i < me_len;  i++) {
 	adtable.neightable[i] = rip_obj_new_route_entry ();
 	adtable.neightable[i]->destination = rip_obj_new_node_info ();
-	adtable.neightable[i]->destination->name = rip_net_inet_ntop (me[i].dest_addr);
-	rip_obj_set_inet_from_addr (adtable.neightable[i]->destination->inet, &me[i].dest_addr);
+	adtable.neightable[i]->destination->name =
+	    rip_net_inet_ntop (me[i].dest_addr);
+	rip_obj_set_inet_from_addr (adtable.neightable[i]->destination->inet,
+				    &me[i].dest_addr);
 	adtable.neightable[i]->nexthop = NULL; /* not used here */
 	adtable.neightable[i]->cost = me[i].cost;
     }

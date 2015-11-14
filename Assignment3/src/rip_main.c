@@ -175,7 +175,8 @@ int rip_main_loop (void)
     while (TRUE) {
 
 	pthread_mutex_lock (&lock);
-	if (adtable.ready) { /* TRUE: the thread didn't read the adverstisement */
+	if (adtable.ready) {
+            /* TRUE: the thread didn't read the adverstisement */
 	    pthread_mutex_unlock (&lock);	
 	    continue;
 	}
@@ -183,7 +184,8 @@ int rip_main_loop (void)
 	pthread_mutex_unlock (&lock);	
 	node->name = NULL;
 	memset (message, 0, MAXROUTE * message_entry_t_len);
-	if ((message_entry_num = rip_net_recv_advertisement (node,message)) < 0) {
+	if ((message_entry_num =
+	    rip_net_recv_advertisement (node,message)) < 0) {
 	    ret = -1;
 	    break;
 	}
