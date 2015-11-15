@@ -66,7 +66,7 @@ void rip_net_send_advertisement (void)
 int rip_net_recv_advertisement (node_info_t nd, message_entry_t *me) 
 {
     int ret, numfd, entry_len;
-    static int cnt = 2;
+    /* static int cnt = 2; */
     struct sockaddr_in nodeaddr;
     socklen_t nodeaddr_len;
     fd_set socket_set;
@@ -74,10 +74,10 @@ int rip_net_recv_advertisement (node_info_t nd, message_entry_t *me)
 
     FD_ZERO (&socket_set);
     FD_SET (rip_node_config->rsock, &socket_set);
-    /* First time run: timeout = (period/2) */
-    /* Second time: timeout = period */
-    cnt = (cnt <= 1) ? 1 : cnt;
-    timeout.tv_sec = rip_node_config->period / cnt--;
+    /* /\* First time run: timeout = (period/2) *\/ */
+    /* /\* Second time: timeout = period *\/ */
+    /* cnt = (cnt <= 1) ? 1 : cnt; */
+    timeout.tv_sec = rip_node_config->period;
     timeout.tv_usec = 0;
 
     ret = numfd = 0;
@@ -87,18 +87,21 @@ int rip_net_recv_advertisement (node_info_t nd, message_entry_t *me)
 			 &timeout)) < 0) {
 	return -1;
     }
+    printf("%d\n", numfd);
+    if (numfd == 0) {
+	return 0;
+    }
+    if (numfd) {
+	nodeaddr_len = sizeof (struct sockaddr_in);       
+	ret = recvfrom (rip_node_config->rsock, me, MAXROUTE * entry_len,
+			0, (struct sockaddr *)&nodeaddr, &nodeaddr_len);
 
-   if (numfd) {
-       nodeaddr_len = sizeof (struct sockaddr_in);       
-       ret = recvfrom (rip_node_config->rsock, me, MAXROUTE * entry_len,
-		       0, (struct sockaddr *)&nodeaddr, &nodeaddr_len);
+	nd->name = rip_net_inet_ntop (nodeaddr.sin_addr);
+	rip_obj_set_inet (nd->inet, &nodeaddr);
+    }
 
-       nd->name = rip_net_inet_ntop (nodeaddr.sin_addr);
-       rip_obj_set_inet (nd->inet, &nodeaddr);
-   }
-
-   /* return the number of message_entry in the received message */
-   return (ret/entry_len) ;
+    /* return the number of message_entry in the received message */
+    return (ret/entry_len) ;
 }
 
 char *rip_net_inet_ntop (struct in_addr in)

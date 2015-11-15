@@ -181,6 +181,7 @@ int rip_main_loop (void)
 	    continue;
 	}
 	adtable.ready = FALSE;
+	adtable.is_empty = TRUE;
 	pthread_mutex_unlock (&lock);	
 	node->name = NULL;
 	memset (message, 0, MAXROUTE * message_entry_t_len);
@@ -189,15 +190,15 @@ int rip_main_loop (void)
 	    ret = -1;
 	    break;
 	}
-	/* "push" received advertisement to rip_up() through */
-	/* adtable[], from the second loop and so */
-	if (node->name) {
+	if (message_entry_num == 0) {
+	    pthread_mutex_lock (&lock);
+	    adtable.is_empty = TRUE;
+	    adtable.ready = TRUE;
+	    pthread_mutex_unlock (&lock);
+	} else if (node->name) {
+	    /* "push" received advertisement to rip_up() through */
+	    /* adtable[], from the second loop and so */
 	    rip_obj_push_recv_advertisement (node,message,message_entry_num);
-	}
-	/* if its the first interation, send an advertisement */
-	/* subsequent advertisement might be sent by rip_up() */
-	if (cnt++ == 0) {
-	    rip_net_send_advertisement ();
 	}
     }
     return ret;

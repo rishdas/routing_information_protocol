@@ -169,6 +169,7 @@ void rip_obj_push_recv_advertisement (node_info_t n, message_entry_t *me,
 	adtable.neightable[i]->nexthop = NULL; /* not used here */
 	adtable.neightable[i]->cost = me[i].cost;
     }
+    adtable.is_empty = FALSE;
     adtable.ready = TRUE;
     pthread_mutex_unlock (&lock);
 

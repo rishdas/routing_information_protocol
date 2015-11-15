@@ -91,7 +91,8 @@ struct _advert_entry
 {
     node_info_t neighbor;		/**< Advertisement sender */
     route_entry_t neightable[MAXROUTE]; /**< Advertised table */
-    bool_t ready;			/**< Advertised message ready for thread?  */
+    bool_t ready;                       /**< Advertised message ready for thread*/
+    bool_t is_empty;                    /*is advent_entry buff empty*/
 };
 
 typedef struct _advert_entry advert_entry_t;

@@ -12,6 +12,13 @@ void *rip_up(void *ptr)
 	if (!adtable.ready) {
 	    goto end_loop;
 	}
+	if (adtable.is_empty) {
+	    rip_net_send_advertisement ();
+	    adtable.ready = FALSE;
+	    adtable.is_empty = TRUE;
+	    printf("Send adv empty\n");
+	    goto end_loop;
+	}
 	printf ("rip_up(): Update from %s\n",adtable.neighbor->name);
 	for (i = 0; adtable.neightable[i]; i++) {
 	    printf ("\tDestination = %s Cost = %d\n", 
@@ -22,6 +29,9 @@ void *rip_up(void *ptr)
 	printf ("End of update\n");
 	memset (&adtable, 0, advert_entry_t_len);
 	adtable.ready = FALSE;
+	adtable.is_empty = TRUE;
+	rip_net_send_advertisement ();
+	printf("Send adv\n");
 	
     end_loop:
 	pthread_mutex_unlock (&lock);
