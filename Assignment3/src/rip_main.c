@@ -32,7 +32,9 @@ void rip_main_init_graph_distance_vector()
     for (i = 0; i < no_nodes; i++) {
 	rip_obj_set_graph_entry(0, i,
 				routingtable[i]->cost, routingtable[i]->ttl);
-	rip_obj_set_dist_hop_vect_ent(i , routingtable[i]->cost, 0);
+	rip_obj_set_dist_hop_vect_ent(i , routingtable[i]->cost,
+				      rip_routing_get_index(
+					  routingtable[i]->nexthop));
     }
     return;
 }

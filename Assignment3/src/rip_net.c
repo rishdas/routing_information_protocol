@@ -29,8 +29,8 @@ void rip_net_bind_port (void)
 	perror ("receive socket");
 	exit (1);
     } 
-  fcntl (rip_node_config->rsock, F_SETFL, O_NONBLOCK);
-   if ((bind (rip_node_config->rsock, 
+    fcntl (rip_node_config->rsock, F_SETFL, O_NONBLOCK);
+    if ((bind (rip_node_config->rsock, 
 	       (struct sockaddr *)rip_node_config->inet,
 	       sizeof (struct sockaddr))) < 0) {
 	perror ("bind");
@@ -41,7 +41,8 @@ void rip_net_bind_port (void)
     if ((rip_node_config->ssock = socket (AF_INET, SOCK_DGRAM,0)) < 0){
 	perror ("send socket");
 	exit (1);
-    }    
+    }
+    rip_obj_init_last_update_sent();
     return;
 };
 
@@ -60,6 +61,7 @@ void rip_net_send_advertisement (void)
 	}
     }
     rip_net_send_message (message, ms);
+    rip_obj_set_last_update_sent();
     return;
 }
 

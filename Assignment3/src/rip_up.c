@@ -1,5 +1,6 @@
 #include <rip_main.h>
 #include <rip_proto.h>
+#include <rip_routing.h>
 
 
 void *rip_up(void *ptr) 
@@ -13,13 +14,24 @@ void *rip_up(void *ptr)
 	    goto end_loop;
 	}
 	if (adtable.is_empty) {
-	    rip_net_send_advertisement ();
+	    if (rip_util_is_update_required()) {
+		rip_net_send_advertisement ();
+	    }
 	    adtable.ready = FALSE;
 	    adtable.is_empty = TRUE;
 	    printf("Send adv empty\n");
 	    goto end_loop;
 	}
 	printf ("rip_up(): Update from %s\n",adtable.neighbor->name);
+	/* rip_routing_print_graph(); */
+	sleep(30);
+	rip_routing_print_dist_vector();
+	rip_routing_update_graph();
+	rip_routing_bellman_ford();
+	rip_routing_update_routing_table();
+	rip_util_print_routing_table();
+	rip_routing_print_dist_vector();
+	/* rip_routing_print_graph(); */
 	for (i = 0; adtable.neightable[i]; i++) {
 	    printf ("\tDestination = %s Cost = %d\n", 
 		    adtable.neightable[i]->destination->name,

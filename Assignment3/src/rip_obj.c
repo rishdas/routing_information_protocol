@@ -254,3 +254,16 @@ void rip_obj_destroy_dist_hop_vector(route_dist_hop_vect_t dist_hop_vect)
     free(dist_hop_vect);
     return;
 }
+
+void rip_obj_init_last_update_sent()
+{
+    last_update_sent.tv_sec = 0;
+    last_update_sent.tv_usec = 0;
+    return;
+}
+
+void rip_obj_set_last_update_sent()
+{
+    gettimeofday(&last_update_sent, 0);
+    return;
+}

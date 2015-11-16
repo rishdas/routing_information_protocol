@@ -134,3 +134,5 @@ route_dist_hop_vect_t dist_hop_vect;
 
 /* Mutex */
 pthread_mutex_t lock;
+/*Time tracking*/
+struct timeval last_update_sent;
