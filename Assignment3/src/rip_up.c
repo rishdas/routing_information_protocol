@@ -6,7 +6,8 @@
 void *rip_up(void *ptr) 
 {
     route_entry_t re;
-    int i;
+    int           i;
+    bool_t        has_rout_tab_changed = TRUE;
     
     while (TRUE) {
 	pthread_mutex_lock (&lock);
@@ -24,11 +25,10 @@ void *rip_up(void *ptr)
 	}
 	printf ("rip_up(): Update from %s\n",adtable.neighbor->name);
 	/* rip_routing_print_graph(); */
-	sleep(30);
 	rip_routing_print_dist_vector();
 	rip_routing_update_graph();
 	rip_routing_bellman_ford();
-	rip_routing_update_routing_table();
+	has_rout_tab_changed = rip_routing_update_routing_table();
 	rip_util_print_routing_table();
 	rip_routing_print_dist_vector();
 	/* rip_routing_print_graph(); */
@@ -42,8 +42,11 @@ void *rip_up(void *ptr)
 	memset (&adtable, 0, advert_entry_t_len);
 	adtable.ready = FALSE;
 	adtable.is_empty = TRUE;
-	rip_net_send_advertisement ();
-	printf("Send adv\n");
+	if (has_rout_tab_changed == TRUE
+	    || rip_util_is_update_required()) {
+	    rip_net_send_advertisement ();
+	    printf("Send adv\n");
+	}
 	
     end_loop:
 	pthread_mutex_unlock (&lock);
