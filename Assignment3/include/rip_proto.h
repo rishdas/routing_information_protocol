@@ -37,6 +37,7 @@ char *rip_net_inet_ntop (struct in_addr );
 
 /* rip_up.c */
 void *rip_up(void *);
+void *rip_up_ttl(void *);
 
 /* global variables */
 extern node_config_t rip_node_config;
@@ -44,3 +45,4 @@ extern unsigned int rip_routing_table_entry_number;
 extern route_entry_t routingtable[];
 extern advert_entry_t adtable;
 extern pthread_mutex_t lock;
+extern pthread_mutex_t graph_lock;

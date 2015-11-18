@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <ifaddrs.h>
 #include <pthread.h>
+#include <signal.h>
 
 #define cost_t    unsigned int
 #define bool_t    char
@@ -134,5 +135,6 @@ route_dist_hop_vect_t dist_hop_vect;
 
 /* Mutex */
 pthread_mutex_t lock;
+pthread_mutex_t graph_lock;
 /*Time tracking*/
-struct timeval last_update_sent;
+struct timeval   last_update_sent;

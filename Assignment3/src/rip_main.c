@@ -206,10 +206,10 @@ int rip_main_loop (void)
     return ret;
 }
 
-
 int main (int argc, char **argv)
 {
     pthread_t rip_up_thread;
+    pthread_t rip_up_ttl_thread;
 
     rip_node_config = rip_obj_new_node_config ();
 
@@ -228,7 +228,11 @@ int main (int argc, char **argv)
 	perror ("pthread_create");
 	exit (1);
     }
-
+    if ((pthread_create (&rip_up_ttl_thread, NULL, rip_up_ttl, NULL)) != 0) {
+	perror ("pthread_create");
+	exit (1);
+    }
+    
     rip_main_loop ();
 
     return 0;

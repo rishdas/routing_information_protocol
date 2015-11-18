@@ -60,6 +60,7 @@ void rip_routing_update_graph()
     neighbor_index = rip_routing_get_index(adtable.neighbor);
     rip_obj_set_graph_entry(neighbor_index, neighbor_index,
 			    0, DEF_TTL*DEF_PERIOD);
+    rip_obj_set_graph_entry(0, neighbor_index, 1, DEF_TTL*DEF_PERIOD);
     for (i = 0; adtable.neightable[i]; i++) {
 	advert_neig_index =
 	    rip_routing_get_index(adtable.neightable[i]->destination);
@@ -128,4 +129,27 @@ bool_t rip_routing_update_routing_table()
 	    rip_routing_update_rout_tab_with_dist_vect(i);
 	}
     }
+}
+void rip_routing_decrement_ttl()
+{
+    unsigned int no_nodes = rip_routing_table_entry_number;
+    unsigned int i = 0, j = 0;
+    for (i = 0; i < no_nodes; i++) {
+	for (j = 0; j < no_nodes; j++) {
+
+	    if (r_graph[i][j].cost != COST_INFINITY) {
+		
+		r_graph[i][j].ttl -= DEF_PERIOD;
+
+		if (r_graph[i][j].ttl <= 0) {
+		    r_graph[i][j].cost = COST_INFINITY;
+		    dist_hop_vect[j].cost = COST_INFINITY;
+		}
+	    }
+	}
+    }
+    r_graph[0][0].ttl = DEF_PERIOD*DEF_TTL;
+    r_graph[0][0].cost = 0;
+    dist_hop_vect[0].cost = 0;
+    return;
 }
