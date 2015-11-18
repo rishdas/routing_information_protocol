@@ -56,7 +56,7 @@ void rip_net_send_advertisement (void)
     for (i = 0; i < rip_routing_table_entry_number; i++) {
 	if (routingtable[i]->nexthop && routingtable[i]->cost > 0) {
 	    message[ms].dest_addr = 
-		routingtable[i]->nexthop->inet->sin_addr;
+		routingtable[i]->destination->inet->sin_addr;
 	    message[ms++].cost = routingtable[i]->cost;
 	}
     }
