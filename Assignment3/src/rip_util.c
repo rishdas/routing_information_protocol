@@ -18,7 +18,7 @@ void rip_util_print_routing_table (void)
 	fprintf (stdout,"%-26s %-26s %-5d %-5d\n", entry->destination->name,
 		 (entry->nexthop) ? 
 		 entry->nexthop->name : "Null        ", entry->cost, 
-		 entry->ttl);	
+		 entry->ttl);
     };
     return;
 }

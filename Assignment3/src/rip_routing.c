@@ -58,15 +58,16 @@ void rip_routing_update_graph()
     unsigned int advert_neig_index = 0;
     unsigned int i = 0;
     neighbor_index = rip_routing_get_index(adtable.neighbor);
-    rip_obj_set_graph_entry(neighbor_index, neighbor_index,
-			    0, DEF_TTL*DEF_PERIOD);
-    rip_obj_set_graph_entry(0, neighbor_index, 1, DEF_TTL*DEF_PERIOD);
+    rip_obj_set_graph_entry(neighbor_index, neighbor_index, 0,
+			    rip_node_config->ttl*rip_node_config->period);
+    rip_obj_set_graph_entry(0, neighbor_index, 1,
+			    rip_node_config->ttl*rip_node_config->period);
     for (i = 0; adtable.neightable[i]; i++) {
 	advert_neig_index =
 	    rip_routing_get_index(adtable.neightable[i]->destination);
 	rip_obj_set_graph_entry(neighbor_index, advert_neig_index,
 				adtable.neightable[i]->cost,
-				DEF_TTL*DEF_PERIOD);
+				rip_node_config->ttl*rip_node_config->period);
     }
 }
 
@@ -113,7 +114,8 @@ void rip_routing_update_rout_tab_with_dist_vect(unsigned int index)
     next_hop = routingtable[dist_vect_index]->destination;
     routingtable[index]->nexthop = next_hop;
     routingtable[index]->cost = dist_hop_vect[index].cost;
-    routingtable[index]->ttl = DEF_PERIOD*DEF_TTL;
+    routingtable[index]->ttl =
+	rip_node_config->ttl*rip_node_config->period;
     return;
 }
 bool_t rip_routing_update_routing_table()
@@ -139,7 +141,7 @@ void rip_routing_decrement_ttl()
 
 	    if (r_graph[i][j].cost != COST_INFINITY) {
 		
-		r_graph[i][j].ttl -= DEF_PERIOD;
+		r_graph[i][j].ttl -= rip_node_config->period;
 
 		if (r_graph[i][j].ttl <= 0) {
 		    r_graph[i][j].cost = COST_INFINITY;
@@ -148,7 +150,8 @@ void rip_routing_decrement_ttl()
 	    }
 	}
     }
-    r_graph[0][0].ttl = DEF_PERIOD*DEF_TTL;
+    r_graph[0][0].ttl =
+	rip_node_config->ttl*rip_node_config->period;
     r_graph[0][0].cost = 0;
     dist_hop_vect[0].cost = 0;
     return;

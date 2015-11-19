@@ -69,7 +69,7 @@ void *rip_up_ttl(void *ptr)
 {
     while(TRUE)
     {
-	sleep(DEF_PERIOD);
+	sleep(rip_node_config->period);
 	printf("Updating TTL\n");
 	pthread_mutex_lock(&graph_lock);
 	rip_routing_decrement_ttl();
