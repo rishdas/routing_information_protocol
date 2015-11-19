@@ -8,7 +8,7 @@ void rip_util_print_routing_table (void)
     route_entry_t entry;
  
     fprintf (stdout,"Initial routing table:\n"
-	     "Node      \tNext Hop\tCost\tTTL\n");
+	     "Node\tNext Hop\tCost\tTTL\n");
     for (i = 0; i < rip_routing_table_entry_number; i++){
 	memset (buff,0,INET_ADDRSTRLEN);
 	entry = routingtable[i];

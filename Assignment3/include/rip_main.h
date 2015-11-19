@@ -34,6 +34,7 @@
 #define MYSELF    "me"
 #define DEF_PERIOD 30
 #define DEF_TTL 3
+#define MAX_HOST_LENGTH 255
 
 /**
  * Defines node's configuration

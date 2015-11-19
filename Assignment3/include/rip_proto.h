@@ -25,6 +25,7 @@ void rip_obj_set_route_entry (route_entry_t, node_info_t,
 			      unsigned short int);
 void rip_obj_destroy_route_entry (route_entry_t);
 void rip_obj_push_recv_advertisement (node_info_t, message_entry_t *, int);
+char *rip_obj_new_char_buf(unsigned int len);
 
 
 /* rip_util.c */

@@ -13,7 +13,9 @@ void rip_main_insert_entry_table_myself (void)
     myself = rip_obj_new_node_info ();
     entry = rip_obj_new_route_entry ();
     
-    myself->name = rip_net_inet_ntop (rip_node_config->inet->sin_addr);
+//    myself->name = rip_net_inet_ntop (rip_node_config->inet->sin_addr);
+    myself->name = rip_obj_new_char_buf(MAX_HOST_LENGTH);
+    gethostname(myself->name, MAX_HOST_LENGTH);
     myself->inet = rip_node_config->inet;
     entry->destination = myself;
     entry->nexthop = myself;
@@ -38,13 +40,37 @@ void rip_main_init_graph_distance_vector()
     }
     return;
 }
+void rip_main_fill_the_addr(node_info_t *info, char *name)
+{
+    struct addrinfo *host_addr_info_list;
+    struct addrinfo *host_addr_info;
+    char            addr[100];
+
+    getaddrinfo(name, NULL, NULL, &host_addr_info_list);
+
+    for (host_addr_info = host_addr_info_list; host_addr_info != NULL;
+	 host_addr_info = host_addr_info->ai_next) {
+
+	if (host_addr_info->ai_family == AF_INET) {
+	    (*info)->inet->sin_addr =
+		((struct sockaddr_in *)host_addr_info->ai_addr)->sin_addr;
+	    (*info)->inet->sin_family = AF_INET;
+	    (*info)->inet->sin_port = rip_node_config->inet->sin_port;
+	    (*info)->name = strdup(name);
+	    break;
+	}
+	
+    }
+    return;
+}
 int rip_main_parse_config (void)
 {
-    char line[128];
-    char *tk, *l;
-    node_info_t info;
-    route_entry_t entry;
- 
+    char            line[128];
+    char            *tk, *l;
+    node_info_t     info;
+    route_entry_t   entry;
+
+    
     while (fgets (line, 128, rip_node_config->fconfig)){
 	l = line;
 	info = rip_obj_new_node_info ();
@@ -52,11 +78,9 @@ int rip_main_parse_config (void)
 	/* get IP from first column, and populate node_info_t->inet also */
 	/* with address family and destination port */
 	tk = strsep (&l, " ");
-	inet_pton(AF_INET, tk, &(info->inet->sin_addr));
-	info->inet->sin_family = AF_INET;
-	info->inet->sin_port = rip_node_config->inet->sin_port;
-	info->name = rip_net_inet_ntop (info->inet->sin_addr);
-	/* get yes/no. If 'yes', add node as destination and nexthop  */
+	rip_main_fill_the_addr(&info, tk);
+	
+        /* get yes/no. If 'yes', add node as destination and nexthop  */
 	/* with cost = 1 */
 	tk = strsep (&l, "\n");
 	if (!strcmp (tk, "yes")){

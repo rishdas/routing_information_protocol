@@ -267,3 +267,16 @@ void rip_obj_set_last_update_sent()
     gettimeofday(&last_update_sent, 0);
     return;
 }
+
+char *rip_obj_new_char_buf(unsigned int len)
+{
+    char *str;
+    str = (char *)rip_malloc(len);
+    return str;
+}
+
+void rip_obj_destroy_char_buf(char *buf)
+{
+    free(buf);
+    return;
+}
