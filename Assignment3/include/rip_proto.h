@@ -35,6 +35,7 @@ void rip_util_print_routing_table (void);
 void rip_net_bind_port (void);
 void rip_net_send_advertisement (void);
 char *rip_net_inet_ntop (struct in_addr );
+char *rip_net_get_name (struct in_addr);
 
 /* rip_up.c */
 void *rip_up(void *);

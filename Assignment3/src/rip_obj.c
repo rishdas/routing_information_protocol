@@ -163,7 +163,7 @@ void rip_obj_push_recv_advertisement (node_info_t n, message_entry_t *me,
 	adtable.neightable[i] = rip_obj_new_route_entry ();
 	adtable.neightable[i]->destination = rip_obj_new_node_info ();
 	adtable.neightable[i]->destination->name =
-	    rip_net_inet_ntop (me[i].dest_addr);
+	    rip_net_get_name(me[i].dest_addr);
 	rip_obj_set_inet_from_addr (adtable.neightable[i]->destination->inet,
 				    &me[i].dest_addr);
 	adtable.neightable[i]->nexthop = NULL; /* not used here */

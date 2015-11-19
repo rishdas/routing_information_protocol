@@ -98,7 +98,7 @@ int rip_net_recv_advertisement (node_info_t nd, message_entry_t *me)
 	ret = recvfrom (rip_node_config->rsock, me, MAXROUTE * entry_len,
 			0, (struct sockaddr *)&nodeaddr, &nodeaddr_len);
 
-	nd->name = rip_net_inet_ntop (nodeaddr.sin_addr);
+	nd->name = rip_net_get_name(nodeaddr.sin_addr);
 	rip_obj_set_inet (nd->inet, &nodeaddr);
     }
 
@@ -115,3 +115,18 @@ char *rip_net_inet_ntop (struct in_addr in)
     return ret;
 }
 
+char *rip_net_get_name (struct in_addr in)
+{
+    char *ret = NULL;
+    unsigned int no_nodes = rip_routing_table_entry_number;
+    unsigned int i = 0;
+
+    for (i = 0; i < no_nodes; i++) {
+	if (routingtable[i]->destination->inet->sin_addr.s_addr
+	    == in.s_addr) {
+	    ret = strdup(routingtable[i]->destination->name);
+	    break;
+	}
+    }
+    return ret;
+}
