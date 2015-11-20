@@ -30,7 +30,8 @@ void *rip_up(void *ptr)
 	/*Print tables before update*/
 	/* rip_routing_print_graph(); */
 	/* rip_routing_print_dist_vector(); */
-
+	rip_routing_update_dist_vector();
+	
 	rip_routing_update_graph();
 	rip_routing_bellman_ford();
 	has_rout_tab_changed = rip_routing_update_routing_table();

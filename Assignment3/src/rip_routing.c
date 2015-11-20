@@ -156,3 +156,18 @@ void rip_routing_decrement_ttl()
     dist_hop_vect[0].cost = 0;
     return;
 }
+
+void rip_routing_update_dist_vector()
+{
+    unsigned int no_nodes = rip_routing_table_entry_number;
+    unsigned int i = 0;
+    for (i = 0; i < no_nodes; i++) {
+	if (dist_hop_vect[i].hop_index == -1) {
+	    continue;
+	}
+	if (dist_hop_vect[i].hop_index != 0 && dist_hop_vect[i].cost > 1) {
+	    dist_hop_vect[i].cost = COST_INFINITY;
+	}
+    }
+    return;
+}
