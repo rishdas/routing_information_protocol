@@ -62,6 +62,8 @@ void rip_routing_update_graph()
 			    rip_node_config->ttl*rip_node_config->period);
     rip_obj_set_graph_entry(0, neighbor_index, 1,
 			    rip_node_config->ttl*rip_node_config->period);
+    dist_hop_vect[neighbor_index].cost = 1;
+    dist_hop_vect[neighbor_index].hop_index = neighbor_index;
     for (i = 0; adtable.neightable[i]; i++) {
 	advert_neig_index =
 	    rip_routing_get_index(adtable.neightable[i]->destination);
@@ -111,6 +113,7 @@ void rip_routing_update_rout_tab_with_dist_vect(unsigned int index)
 {
     unsigned int dist_vect_index = dist_hop_vect[index].hop_index;
     node_info_t next_hop;
+
     next_hop = routingtable[dist_vect_index]->destination;
     routingtable[index]->nexthop = next_hop;
     routingtable[index]->cost = dist_hop_vect[index].cost;
@@ -124,11 +127,34 @@ bool_t rip_routing_update_routing_table()
     bool_t has_changed = FALSE;
     unsigned int i = 0;
     for (i = 0; i<no_nodes; i++) {
+	routingtable[i]->ttl = r_graph[0][i].ttl;
+	if (r_graph[0][i].ttl == 0) {
+	    printf ("\nTTL ZERO: %s\n", routingtable[i]->destination->name);
+	}
 	if (rip_routing_is_rout_tab_dist_vect_same(i)) {
 	    continue;
 	} else {
 	    has_changed = TRUE;
 	    rip_routing_update_rout_tab_with_dist_vect(i);
+	}
+    }
+}
+void rip_routing_decrement_ttl_routing_table()
+{
+    unsigned int no_nodes = rip_routing_table_entry_number;
+    unsigned int i = 0;
+
+    for (i = 0; i < no_nodes; i++) {
+	if (routingtable[i]->cost != COST_INFINITY
+	    && routingtable[i]->cost > 0) {
+	    routingtable[i]->ttl -= rip_node_config->period;
+	    if (routingtable[i]->ttl <= 0) {
+		routingtable[i]->cost = COST_INFINITY;
+		routingtable[i]->ttl =
+		    rip_node_config->ttl * rip_node_config->period;
+		routingtable[i]->nexthop = NULL;
+		dist_hop_vect[i].cost = COST_INFINITY;
+	    }
 	}
     }
 }

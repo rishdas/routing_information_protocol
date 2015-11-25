@@ -45,13 +45,56 @@ void rip_net_bind_port (void)
     rip_obj_init_last_update_sent();
     return;
 };
-
+void rip_net_build_split_message(message_entry_t *message, int *ms,
+				 unsigned int ni)
+{
+    unsigned int i;
+    for (i = 0; i < rip_routing_table_entry_number; i++) {
+	if ((rip_routing_get_index(routingtable[i]->nexthop)) == ni) {
+	    continue;
+	}
+	if (routingtable[i]->nexthop && routingtable[i]->cost >= 0) {
+	    message[*ms].dest_addr = 
+		routingtable[i]->destination->inet->sin_addr;
+	    message[(*ms)++].cost = routingtable[i]->cost;
+	}
+    }
+}
+void rip_net_send_split_advertisement()
+{
+    unsigned int i;
+    int ms = 0;
+    message_entry_t message[MAXROUTE];
+    
+    for (i = 0; i < rip_routing_table_entry_number; i++) {
+	if (routingtable[i]->cost == 1) {
+	    memset (&message, 0, MAXROUTE * message_entry_t_len);
+	    ms = 0;
+	    rip_net_build_split_message(message, &ms, i);
+	    if ((sendto (rip_node_config->ssock,
+			 message, ms * message_entry_t_len, 0,
+			 (struct sockaddr *)routingtable[i]->destination->inet,
+			 sizeof (struct sockaddr))) < 0) {
+		perror ("sendto:");
+		exit(1);
+	    };
+	    printf("DEBUG : split sendto :%s %d\n",
+		   routingtable[i]->destination->name, ms);
+	};
+    };
+    return;
+}
 void rip_net_send_advertisement (void)
 {
     int i;
     int ms = 0;
     message_entry_t message[MAXROUTE];
-
+    if (rip_node_config->shorizon) {
+	printf("DEBUG :Taking split horizon path\n");
+	rip_net_send_split_advertisement();
+	rip_obj_set_last_update_sent();
+	return;
+    }
     memset (&message, 0, MAXROUTE * message_entry_t_len);
     for (i = 0; i < rip_routing_table_entry_number; i++) {
 	if (routingtable[i]->nexthop && routingtable[i]->cost > 0) {
@@ -89,7 +132,6 @@ int rip_net_recv_advertisement (node_info_t nd, message_entry_t *me)
 			 &timeout)) < 0) {
 	return -1;
     }
-    printf("%d\n", numfd);
     if (numfd == 0) {
 	return 0;
     }
