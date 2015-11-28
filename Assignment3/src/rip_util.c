@@ -64,22 +64,31 @@ void rip_util_record_start_time()
     return;
 }
 
-void rip_util_record_display_convergence_time()
+void rip_util_record_display_convergence_time(bool_t has_rout_tab_changed)
 {
     struct timeval convg_time;
     unsigned long convg_time_taken;
+    static bool_t cal_needed = TRUE;
 
+    if (has_rout_tab_changed == TRUE) {
+	cal_needed = TRUE;
+	return;
+    }
+    if (cal_needed == FALSE) {
+	return;
+    }
+    cal_needed = FALSE;
     gettimeofday(&convg_time, 0);
     convg_time_taken = convg_time.tv_sec - start_time.tv_sec
 	+ (convg_time.tv_usec - start_time.tv_usec)/1000000;
     if (convg_time_taken == 0) {
 	convg_time_taken = (convg_time.tv_sec - start_time.tv_sec)*1000000
 	+ convg_time.tv_usec - start_time.tv_usec;
-	printf("Convergence Time(in microseconds): %ul\n", convg_time_taken);
+	printf("Convergence Time(in microseconds): %lu\n", convg_time_taken);
 	start_time = convg_time;
 	return;
     }
-    printf("Convergence Time(in seconds): %ul\n", convg_time_taken);
+    printf("Convergence Time(in seconds): %lu\n", convg_time_taken);
     start_time = convg_time;
     return;
 }

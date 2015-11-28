@@ -42,9 +42,8 @@ void *rip_up(void *ptr)
 	rip_util_print_routing_table();
 	/* rip_routing_print_dist_vector(); */
 	/* rip_routing_print_graph(); */
-	if (has_rout_tab_changed == FALSE) {
-	    rip_util_record_display_convergence_time();
-	}
+	
+	rip_util_record_display_convergence_time(has_rout_tab_changed);
 
 	pthread_mutex_unlock(&graph_lock);
 	printf("-----------------------------------\n");
