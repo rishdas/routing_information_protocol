@@ -31,7 +31,6 @@
 #define MAXNODE        255
 #define COST_INFINITY  9999
 #define INVALID_HOP_I  -1
-#define MYSELF    "me"
 #define DEF_PERIOD 30
 #define DEF_TTL 3
 #define MAX_HOST_LENGTH 255

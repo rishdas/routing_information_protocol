@@ -112,11 +112,13 @@ void rip_main_parse_args (int c, char **v)
     char *fconfig = NULL;
     char *port = NULL;
     char *iface = NULL;
+    char logfile[MAX_HOST_LENGTH+8];
+    node_info_t myself;
 
     /* default config values */
     rip_node_config->period = DEF_PERIOD;
     rip_node_config->ttl = DEF_TTL;
-    rip_node_config->debug = TRUE;
+    rip_node_config->debug = FALSE;
     iface = strdup ("eth0");
 
     opterr = 0;
@@ -181,7 +183,9 @@ void rip_main_parse_args (int c, char **v)
     }
     if (!rip_node_config->debug){
 	fclose (stderr);
-	freopen ("rip.log","a+",stderr);
+	myself = routingtable[0]->destination;
+	sprintf (logfile,"rip-%s.log",myself->name);
+	freopen (logfile,"a+",stderr);
     }
 
     return;
