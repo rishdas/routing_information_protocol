@@ -139,3 +139,4 @@ pthread_mutex_t lock;
 pthread_mutex_t graph_lock;
 /*Time tracking*/
 struct timeval   last_update_sent;
+struct timeval   start_time;

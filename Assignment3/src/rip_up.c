@@ -18,7 +18,7 @@ void *rip_up(void *ptr)
 	    if (rip_util_is_update_required()) {
 		rip_net_send_advertisement ();
 		rip_util_print_routing_table();
-		printf("Send adv empty\n");
+		/* printf("Send adv empty\n"); */
 	    }
 	    adtable.ready = FALSE;
 	    adtable.is_empty = TRUE;
@@ -29,22 +29,22 @@ void *rip_up(void *ptr)
 	pthread_mutex_lock(&graph_lock);
 	/*Print tables before update*/
 	/* rip_routing_print_graph(); */
-	rip_routing_print_dist_vector();
+	/* rip_routing_print_dist_vector(); */
 	rip_routing_update_dist_vector();
-
-	rip_routing_print_dist_vector();
-	
+	/* rip_routing_print_dist_vector(); */
 	rip_routing_update_graph();
-	rip_routing_print_dist_vector();
+	/* rip_routing_print_dist_vector(); */
 	rip_routing_bellman_ford();
 	has_rout_tab_changed = rip_routing_update_routing_table();
 
-	rip_routing_print_dist_vector();
+	/* rip_routing_print_dist_vector(); */
 	/*Print tables after update*/
 	rip_util_print_routing_table();
 	/* rip_routing_print_dist_vector(); */
 	/* rip_routing_print_graph(); */
-
+	if (has_rout_tab_changed == FALSE) {
+	    rip_util_record_display_convergence_time();
+	}
 
 	pthread_mutex_unlock(&graph_lock);
 	printf("-----------------------------------\n");
@@ -62,7 +62,7 @@ void *rip_up(void *ptr)
 	if (has_rout_tab_changed == TRUE
 	    || rip_util_is_update_required()) {
 	    rip_net_send_advertisement ();
-	    printf("Send adv\n");
+	    /* printf("Send adv\n"); */
 	}
 	
     end_loop:
@@ -75,7 +75,7 @@ void *rip_up_ttl(void *ptr)
     while(TRUE)
     {
 	sleep(rip_node_config->period);
-	printf("Updating TTL\n");
+	/* printf("Updating TTL\n"); */
 	pthread_mutex_lock(&graph_lock);
 	rip_routing_decrement_ttl();
 	pthread_mutex_unlock(&graph_lock);

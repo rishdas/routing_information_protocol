@@ -7,7 +7,7 @@ void rip_util_print_routing_table (void)
     char buff[INET_ADDRSTRLEN];
     route_entry_t entry;
 
-    fprintf(stdout, "Initial routing table:\n");
+    fprintf(stdout, "Routing table:\n");
     /* fprintf (stdout,"Initial routing table:\n" */
     /* 	     "Node\tNext Hop\tCost\tTTL\n"); */
     fprintf (stdout,
@@ -56,4 +56,30 @@ bool_t rip_util_is_update_required()
 	return TRUE;
     }
     return FALSE;
+}
+
+void rip_util_record_start_time()
+{
+    gettimeofday(&start_time, 0);
+    return;
+}
+
+void rip_util_record_display_convergence_time()
+{
+    struct timeval convg_time;
+    unsigned long convg_time_taken;
+
+    gettimeofday(&convg_time, 0);
+    convg_time_taken = convg_time.tv_sec - start_time.tv_sec
+	+ (convg_time.tv_usec - start_time.tv_usec)/1000000;
+    if (convg_time_taken == 0) {
+	convg_time_taken = (convg_time.tv_sec - start_time.tv_sec)*1000000
+	+ convg_time.tv_usec - start_time.tv_usec;
+	printf("Convergence Time(in microseconds): %ul\n", convg_time_taken);
+	start_time = convg_time;
+	return;
+    }
+    printf("Convergence Time(in seconds): %ul\n", convg_time_taken);
+    start_time = convg_time;
+    return;
 }

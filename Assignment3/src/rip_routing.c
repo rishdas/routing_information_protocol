@@ -138,6 +138,7 @@ bool_t rip_routing_update_routing_table()
 	    rip_routing_update_rout_tab_with_dist_vect(i);
 	}
     }
+    return has_changed;
 }
 void rip_routing_decrement_ttl_routing_table()
 {

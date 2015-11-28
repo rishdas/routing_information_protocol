@@ -235,6 +235,8 @@ int main (int argc, char **argv)
     pthread_t rip_up_thread;
     pthread_t rip_up_ttl_thread;
 
+    rip_util_record_start_time();
+    
     rip_node_config = rip_obj_new_node_config ();
 
     rip_main_parse_args (argc, argv);
