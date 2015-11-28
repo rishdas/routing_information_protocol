@@ -78,8 +78,8 @@ void rip_net_send_split_advertisement()
 		perror ("sendto:");
 		exit(1);
 	    };
-	    printf("DEBUG : split sendto :%s %d\n",
-		   routingtable[i]->destination->name, ms);
+	    /* printf("DEBUG : split sendto :%s %d\n", */
+	    /* 	   routingtable[i]->destination->name, ms); */
 	};
     };
     return;
@@ -90,7 +90,7 @@ void rip_net_send_advertisement (void)
     int ms = 0;
     message_entry_t message[MAXROUTE];
     if (rip_node_config->shorizon) {
-	printf("DEBUG :Taking split horizon path\n");
+	/* printf("DEBUG :Taking split horizon path\n"); */
 	rip_net_send_split_advertisement();
 	rip_obj_set_last_update_sent();
 	return;

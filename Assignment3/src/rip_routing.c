@@ -128,9 +128,9 @@ bool_t rip_routing_update_routing_table()
     unsigned int i = 0;
     for (i = 0; i<no_nodes; i++) {
 	routingtable[i]->ttl = r_graph[0][i].ttl;
-	if (r_graph[0][i].ttl == 0) {
-	    printf ("\nTTL ZERO: %s\n", routingtable[i]->destination->name);
-	}
+	/* if (r_graph[0][i].ttl == 0) { */
+	/*     printf ("\nTTL ZERO: %s\n", routingtable[i]->destination->name); */
+	/* } */
 	if (rip_routing_is_rout_tab_dist_vect_same(i)) {
 	    continue;
 	} else {
