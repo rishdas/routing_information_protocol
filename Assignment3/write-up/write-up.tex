@@ -1,0 +1,130 @@
+
+\documentclass[10pt]{extarticle}
+\usepackage[utf8]{inputenc}     % permite edição direta com acentos
+\usepackage[pdftex]{hyperref}
+\usepackage[margin=0.5in]{geometry}
+\usepackage{fancyvrb}
+\usepackage{graphicx}
+
+\hypersetup{
+  pdfauthor={Lucas Brasilino and Sirshak Das},
+  pdftitle={Computer Network Assignment 3 Write-up},
+  pdfsubject={Computer Network},
+  pdfkeywords={{Lucas Brasilino}, {Sirshak Das}},
+  colorlinks=true,
+  urlcolor=blue,
+  linkcolor=black
+}
+
+\title{Computer Network Assignment 3 Write-up}
+\author{Lucas Brasilino \\ 
+  \href{mailto:lbrasili@indiana.edu}{lbrasili@indiana.edu}
+  \and Sirshak Das\footnote{Names placed in alphabetical order} \\  
+  \href{mailto:sirdas@indiana.edu}{sirdas@indiana.edu}
+}
+\begin{document}                                 
+\thispagestyle{empty}
+\maketitle
+%\centerline{\Large\textbf{Computer Network Assignment 3 Write-up}}   
+%\vspace{0.1in}
+%\centerline{\large{Lucas Brasilino and Sirshak Das}\footnote{Names placed in
+%    alphabetical order}}
+%\centerline{\texttt{\href{mailto:lbrasili@indiana.edu}{lbrasili@indiana.edu}}}
+%\vspace{0.01in}
+
+\section{Introduction}
+
+The third programming assignment from P358 Computer Networks class is to
+implement a Distance Vector routing. Each node, which are routers, has to send
+their cost for reaching all nodes within the network to its immediate
+neighbors. 
+
+The resulting Routing Information Protocol (RIP) service from this assignment
+might support update messages. These messages might be sent in a periodic and
+asynchronous\footnote{As soon as there is some routing table update} ways. The
+protocol is well defined in Figure~\ref{fig:protocol} and must use UDP. After
+receiving update messages, a node uses \href{https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm}{Bellman-Ford Algorithm} to update
+its routing table. Finally, if a node updates any costs in its table, it sends
+an update message to its immediate neighbors.
+
+\begin{figure}[!h]
+\centering
+\begin{BVerbatim}
+
+                           32 bits
++--------------------------------------------------------------+
+|                       IP address (4 bytes)                   |
++--------------------------------------------------------------+
+|                          cost (4 bytes)                      |
++--------------------------------------------------------------+ 
+|                       IP address (4 bytes)                   |
++--------------------------------------------------------------+
+|                          cost (4 bytes)                      |
++--------------------------------------------------------------+
+                             ...
+\end{BVerbatim}
+\caption{Update message}
+\label{fig:protocol}
+\end{figure}
+
+\section{Implementation}
+
+The developed program, called \texttt{rip}, was written in C using a private
+repository in IU's GitHub server. It is organized in 3 directories:
+
+\begin{itemize}
+\item{\texttt{src}:} stores the source code files (\texttt{*.c})
+\item{\texttt{include}:} stores the header files (\texttt{*.h})
+\item{\texttt{test}:} stores sets of configuration files (\texttt{*.conf})
+\end{itemize}
+
+Some design decisions were made for \texttt{rip} development. First, it is a
+multithreaded application. Second, internally not only node's IP addresses are
+stored and manipulated, but also the node's hostname. This fact enables more
+flexibility on the configuration file and better routing table
+printouts. Finally, the functions in source code follows the convention
+\texttt{rip\_<file>\_<name>()}, are organized in such a way that 
+functions starting with \texttt{rip\_<file>\_*()} are placed in \texttt{rip\_<file>.c}
+and each filename embedds its purpose, as described bellow:
+\begin{itemize}
+\item{\texttt{rip\_main.c}:} It is the application entry point (function
+  \texttt{main()}) and the main thread. Also contains routines for parsing the
+  command line arguments and configuration file, for the distance vector
+  graph initialization and for running the mainloop. 
+\item{\texttt{rip\_net.c}:} Encompass all network API, including the
+  \textbf{send\_advertisement} component
+  (\texttt{rip\_net\_send\_advertisement()}).
+\item{\texttt{rip\_obj.c}:} This file contains all memory allocation
+  deallocation functions for creating objects, like node information, route
+  table entries, and protocol message entries.
+\item{\texttt{rip\_routing.c}:} This file contains all the routing APIs including filling up of graph structure, distance vector and routing table.   
+\item{\texttt{rip\_up.c}:} Contains the entry points for the other two threads:
+  \texttt{rip\_up()} and \texttt{rip\_up\_ttl()}.
+\end{itemize}
+
+\section{Compilation}
+
+On top directory a \texttt{Makefile} is provided for a ease compilation. As
+expected, packets like gcc, make and glibc-dev must be installed in the Linux
+system.
+
+\begin{Verbatim}
+$ make clean && make
+\end{Verbatim} %$
+
+At the end of compilation process, the \texttt{rip} binary will be available in
+this directory.
+
+\section{Running the code}
+
+
+
+
+\section{Evaluation}
+
+
+\section{Documentation of the code}
+
+
+\end{document}
+
