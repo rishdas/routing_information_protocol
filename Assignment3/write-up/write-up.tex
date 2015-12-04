@@ -47,6 +47,8 @@
 
 % brackets around options
 \newcommand{\abracket}[1]{$\langle$\texttt{#1}$\rangle$}
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
 
 \title{Computer Network Assignment 3 Write-up}
 \author{Lucas Brasilino \\ 
@@ -54,6 +56,7 @@
   \and Sirshak Das\footnote{Names placed in alphabetical order} \\  
   \href{mailto:sirdas@indiana.edu}{sirdas@indiana.edu}
 }
+\date{}
 \begin{document}                                 
 \thispagestyle{empty}
 \maketitle
@@ -118,10 +121,10 @@ flexibility on the configuration file and better routing table
 printouts. Finally, the functions in source code follows the convention
 \texttt{rip\_<file>\_<name>()}, are organized in such a way that 
 functions starting with \texttt{rip\_<file>\_*()} are placed in \texttt{rip\_<file>.c}
-and each filename embedds its purpose, as described bellow:
+and each filename embed its purpose, as described bellow:
 \begin{itemize}
 \item{\texttt{rip\_main.c}:} It is the application entry point (function
-  \texttt{main()}) and the main thread. Also contains routines for parsing the
+  \texttt{main()}) and the main process. Also contains routines for parsing the
   command line arguments and configuration file, for the distance vector
   graph initialization and for running the mainloop. 
 \item{\texttt{rip\_net.c}:} Encompass all network API, including the
@@ -132,13 +135,13 @@ and each filename embedds its purpose, as described bellow:
   table entries, and protocol message entries.
 \item{\texttt{rip\_routing.c}:} This file contains all the routing APIs including filling up of graph structure, distance vector and routing table.   
 \item{\texttt{rip\_up.c}:} Contains the entry points for the other two threads:
-  \texttt{rip\_up()} and \texttt{rip\_up\_ttl()}.
+  \textbf{rip\_up} and \textbf{rip\_up\_ttl}.
 \end{itemize}
 
 \section{Compilation}
 
-On top directory a \texttt{Makefile} is provided for a ease compilation. As
-expected, packets like gcc, make and glibc-dev must be installed in the Linux
+On top directory a \texttt{Makefile} is provided for a easy compilation. As
+expected, packages like gcc, make and glibc-dev must be installed in the Linux
 system.
 
 \begin{Verbatim}
@@ -176,7 +179,7 @@ otherwise it will be sent to file 'rip\_\abracket{hostname}.log'
 
 \section{Configuration file format}
 
-The configuration file follows exactly formatting proposed by the
+The configuration file follows exactly the formatting proposed by the
 assignment. The first column is a node identifier, which can be an IP address or
 its valid FQDN. In this context, \emph{valid FQDN} means that it can be resolved
 using DNS or \texttt{/etc/hosts}.
@@ -204,6 +207,7 @@ bobac.soic.indiana.edu yes
 \end{minipage}
 \end{figure*}
 
+\newpage
 \section{Application Internals}
 
 This section documents all application internals aspects.
@@ -255,7 +259,7 @@ route_entry_t routingtable[MAXROUTE];
 
 As will be described later, the \texttt{rip} application uses a data structure
 called \texttt{adtable} to pass the advertised table received by the main thread
-(from a node) to the \texttt{rip\_up()} thread in order to do routing
+(from a node) to the \textbf{rip\_up} thread in order to do routing
 calculations. So, this data structure is type \texttt{advert\_entry\_t}:
 
 \begin{lstlisting}
@@ -333,24 +337,24 @@ route_dist_hop_vect_t dist_hop_vect;
 The \texttt{rip} application runs a main process and spawns 2 threads:
 \textbf{rip\_up} and \textbf{rip\_up\_ttl}.
 
-\paragraph{The main  process}: It  parses the command  line options,  parses the
+\paragraph{The main  process} It  parses the command  line options,  parses the
 config file, builds the initial routing  table, starts to listen to UDP messages
-and spawns the \textbf{rip\_up} and \textbf{rip\_up\_ttl}. After that, it enters
+and spawns the \textbf{rip\_up} and \textbf{rip\_up\_ttl} threads. After that, it enters
 in  a   infinite  loop  (\texttt{rip\_main\_loop()})  listen   to  other's  node
 advertisements   (\texttt{rip\_net\_recv\_advertisement()})   and   passes   the
 received              information               to              \textbf{rip\_up}
 (\texttt{rip\_obj\_push\_recv\_advertisement()}) using the \texttt{adtable} data
 structure, using \texttt{lock} mutex for synchonization.
 
-\paragraph{rip\_up}:  This thread  retrieves the  message received  by the  main
+\paragraph{rip\_up}  This thread  retrieves the  message received  by the  main
 thread  and fill  the  advertised  route into  the  graph  structure. Then  runs
 Bellman-Ford (\texttt{rip\_routing\_bellman\_ford()}) on the graph which relaxes
 all the edges and computes  the distance vector hold on \texttt{dist\_hop\_vect}
-data  structure.   This  as  explained   is  a   scaled  down  version   of  the
+data  structure.   This is  a   scaled  down  version   of  the
 \texttt{routingtable[]}, i.e, it only contains the nexthop as hop\_index and the
 cost.   Ttl is  determined from  the graph  or from  the message  received. Once
 Bellman-Ford computes  the distance  vector, this  thread compares  the distance
-vector to  the routing  table if  the there is  a change  and sends  a triggered
+vector to  the routing  table. If  the there is  a change  and sends  a triggered
 update immediately.  If not, it  checks for the last  time when last  update was
 send and,  if a periodic update  is required, it sends  accordingly. This thread
 also  calculates the  Convergence Time,  by  calculating the  time elapsed  from
@@ -358,7 +362,7 @@ also  calculates the  Convergence Time,  by  calculating the  time elapsed  from
 \texttt{routingtable[]}. When it  occurs, the thread updates  the start\_time to
 the new time. This thread uses 2 mutexes: \texttt{lock} and \texttt{graph\_lock}.
 The  former  for  accessing  \texttt{adtable}   and  the  latter  for  accessing
-\texttt{r\_graph}. It shares the first mutex with main thread and the second one
+\texttt{r\_graph}. It shares the first mutex with main process and the second one
 with \textbf{rip\_up\_ttl} thread.
 
 \paragraph{rip\_up\_ttl}: This thread sleeps for period time (defined by the
@@ -382,8 +386,7 @@ between the main process and the thread \textbf{rip\_up}. They are:
   node. Each index is associated with the index in the routing table;
 \end{itemize}
 
-The conditional variables are members of \texttt{adtable} data structure. Are
-they:
+The conditional variables are members of \texttt{adtable} data structure. They are:
 
 \begin{itemize}
 \item{\texttt{adtable.ready}:} Is used by the main process to signals
@@ -411,6 +414,128 @@ pthread_mutex_t graph_lock;
 process and \textbf{rip\_up} thread. \texttt{graph\_lock} mutex controls the
 access to \texttt{r\_graph} between \textbf{rip\_up} and \textbf{rip\_up\_ttl}
 threads.
+
+\section{Test cases}
+
+For application evaluation, some test cases were designed and performed.
+
+\subsection{Test Case 1}
+
+In this test case, three nodes were executed in a linear topology as depicted in
+Figure~\ref{fig:testcase1}. Table~\ref{tab:testcase1nosh} shows the convergence
+time without using split horizon, while Table~\ref{tab:testcase1sh} shows the
+results with split horizon. In both tables the results are grouped by
+parenthesis, but each value correspond to a node. Finally, all times are in
+seconds, including Infinity and Period.
+
+\begin{figure}[!h]
+  \centering
+    \includegraphics[scale=0.50]{TestCase1.png}
+    \caption{Test Case 1 three nodes linear topology}
+    \label{fig:testcase1}
+\end{figure}
+
+\begin{table}[h]
+\caption{Convergence time without split horizon}
+\label{tab:testcase1nosh}
+\centering
+\begin{tabular}{| c | c | c | c |}
+\hline
+Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3)}  &
+\specialcell{One down\\(node 1, node 2)} \\
+\hline
+\hline
+16 & 10 & (20, 9, 17) & (40, 60) \\
+16 & 30 & (61, 29, 54) & (90, 150) \\
+50 & 10 & (20, 9, 18) & (30, 50) \\
+50 & 30 & (60, 29, 57) & (90, 150)\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{Convergence time with split horizon}
+\label{tab:testcase1sh}
+\centering
+\begin{tabular}{| c | c | c | c | c | c | c |}
+\hline
+Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3)}  &
+\specialcell{One down\\(node 1, node 2)} \\
+\hline
+\hline
+16 & 10 & (20, 9, 18)  & (40, 40) \\
+16 & 30 & (60, 29, 57)  & (120, 120) \\
+50 & 10 & (20, 8, 16) & (40, 40) \\
+50 & 30 & (60, 29, 57)  & (120, 120) \\
+\hline
+\end{tabular}
+\end{table}
+
+One thing we observed was that with split horizon we get better convergence time
+than without in case of one node  failure(120 - With split horizon 150 - without
+split  horizon). There  is no  visible difference  in convergence  time in  case
+intitialization.  Similar  trend is  observed when  we vary  the period  from 30
+seconds to 10 seconds.
+
+\newpage
+
+\subsection{Test Case 2}
+
+In this test case, four nodes were executed in a cyclic topology as depicted in
+Figure~\ref{fig:testcase2}. Again, Table~\ref{tab:testcase2nosh} shows the convergence
+time without using split horizon, while Table~\ref{tab:testcase2sh} shows the
+results with split horizon.
+
+\begin{figure}[!h]
+  \centering
+    \includegraphics[scale=0.50]{TestCase2.png}
+    \caption{Test Case 2 four nodes cyclic topology}
+    \label{fig:testcase2}
+\end{figure}
+
+\begin{table}[h]
+\caption{Convergence time without split horizon}
+\label{tab:testcase2nosh}
+\centering
+\begin{tabular}{| c | c | c | c |}
+\hline
+Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3, node 4)}  &
+\specialcell{One down\\(node 1, node 2, node 4)} \\
+\hline
+\hline
+16 & 10 &  (20, 10, 19, 9) & (338, 30, 30) \\
+16 & 30 &  (60, 28, 56, 25) & (1947, 387, 390) \\
+50 & 10 &  (20, 9, 18, 7) &  (616, 30, 30) \\
+50 & 30 &  (60, 28, 56, 24) & (3528, 392, 390) \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{Convergence time with split horizon}
+\label{tab:testcase2sh}
+\centering
+\begin{tabular}{| c | c | c | c |}
+\hline
+Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3, node 4)}  &
+\specialcell{One down\\(node 1, node 2, node 4)} \\
+\hline
+\hline
+16 & 10 & (20, 8, 17, 7)  & (30, 30, 40) \\
+16 & 30 & (60, 28, 57, 26)  & (90, 90, 120)  \\
+50 & 10 & (10, 9, 8, 8)  & (20, 20, 41) \\
+50 & 30 &  (30, 27, 25, 24)  & (60, 60, 120) \\
+\hline
+\end{tabular}
+\end{table}
+
+Confirming our  observation from  the previous  test case here  also we  see the
+convergence time without  split horizon being very high compared  to low in case
+of split horizon(With  split horizon: 120 Without Split Horizon:  1947). One new
+trend which we observed  in this test case was the  variance in convergence time
+without  split horizon  when  we vary  the INFINITY  COST(INFINITY:  16 -  Time:
+1947,INFINITY: 50  Time: 3528). Again  this trend is the  same when we  vary the
+period from 30 to 10 seconds.
 
 \end{document}
 
