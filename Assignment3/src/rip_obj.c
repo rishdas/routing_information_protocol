@@ -194,7 +194,7 @@ void rip_obj_new_graph()
     /*Initialize Entries*/
     for (i = 0; i < no_nodes; i++) {
 	for (j = 0; j < no_nodes; j++) {
-	    r_graph[i][j].cost = COST_INFINITY;
+	    r_graph[i][j].cost = rip_node_config->infinity;
 	    r_graph[i][j].ttl = rip_node_config->ttl * rip_node_config->period;
 	}
     }

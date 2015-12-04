@@ -92,7 +92,7 @@ int rip_main_parse_config (void)
 	/* cost to infinity */
 	else if (!strcmp (tk,"no")){
 	    entry->destination = info;
-	    entry->cost = COST_INFINITY;
+	    entry->cost = rip_node_config->infinity;
 	} else {
 	    fprintf (stderr,"config line error: %s\n",line);
 	    return -1;

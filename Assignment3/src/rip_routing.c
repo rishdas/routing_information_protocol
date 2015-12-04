@@ -9,7 +9,7 @@ void rip_routing_init_graph()
     rip_obj_new_graph();
     rip_obj_new_dist_hop_vector();
     for (i = 0; i < no_nodes; i++) {
-	rip_obj_set_dist_hop_vect_ent(i, COST_INFINITY, INVALID_HOP_I);
+	rip_obj_set_dist_hop_vect_ent(i, rip_node_config->infinity, INVALID_HOP_I);
     }
     //set the self
     rip_obj_set_dist_hop_vect_ent(0, 0, 0);
@@ -146,15 +146,15 @@ void rip_routing_decrement_ttl_routing_table()
     unsigned int i = 0;
 
     for (i = 0; i < no_nodes; i++) {
-	if (routingtable[i]->cost != COST_INFINITY
+	if (routingtable[i]->cost != rip_node_config->infinity
 	    && routingtable[i]->cost > 0) {
 	    routingtable[i]->ttl -= rip_node_config->period;
 	    if (routingtable[i]->ttl <= 0) {
-		routingtable[i]->cost = COST_INFINITY;
+		routingtable[i]->cost = rip_node_config->infinity;
 		routingtable[i]->ttl =
 		    rip_node_config->ttl * rip_node_config->period;
 		routingtable[i]->nexthop = NULL;
-		dist_hop_vect[i].cost = COST_INFINITY;
+		dist_hop_vect[i].cost = rip_node_config->infinity;
 	    }
 	}
     }
@@ -166,13 +166,13 @@ void rip_routing_decrement_ttl()
     for (i = 0; i < no_nodes; i++) {
 	for (j = 0; j < no_nodes; j++) {
 
-	    if (r_graph[i][j].cost != COST_INFINITY) {
+	    if (r_graph[i][j].cost != rip_node_config->infinity) {
 		
 		r_graph[i][j].ttl -= rip_node_config->period;
 
 		if (r_graph[i][j].ttl <= 0) {
-		    r_graph[i][j].cost = COST_INFINITY;
-		    dist_hop_vect[j].cost = COST_INFINITY;
+		    r_graph[i][j].cost = rip_node_config->infinity;
+		    dist_hop_vect[j].cost = rip_node_config->infinity;
 		}
 	    }
 	}
@@ -193,7 +193,7 @@ void rip_routing_update_dist_vector()
 	    continue;
 	}
 	if (dist_hop_vect[i].hop_index != 0 && dist_hop_vect[i].cost > 1) {
-	    dist_hop_vect[i].cost = COST_INFINITY;
+	    dist_hop_vect[i].cost = rip_node_config->infinity;
 	}
     }
     return;
