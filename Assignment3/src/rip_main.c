@@ -118,12 +118,13 @@ void rip_main_parse_args (int c, char **v)
     /* default config values */
     rip_node_config->period = DEF_PERIOD;
     rip_node_config->ttl = DEF_TTL;
+    rip_node_config->infinity = COST_INFINITY;
     rip_node_config->debug = FALSE;
-    iface = strdup ("eth0");
+    iface = strdup (DEF_INT);
 
     opterr = 0;
     
-    while ((o = getopt (c, v, "c:u:t:i:p:sd")) != -1) {
+    while ((o = getopt (c, v, "c:u:t:i:p:y:sd")) != -1) {
 	switch (o){
 	case 'c': 
 	    fconfig = strdup (optarg);
@@ -143,6 +144,9 @@ void rip_main_parse_args (int c, char **v)
 	    break;
 	case 'p':
 	    rip_node_config->period = atoi (optarg);
+	    break;
+	case 'y':
+	    rip_node_config->infinity = atoi (optarg);
 	    break;
 	case 's':
 	    rip_node_config->shorizon = TRUE;

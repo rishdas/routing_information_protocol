@@ -29,10 +29,11 @@
 #define TRUE      (bool_t )1
 #define MAXROUTE       255
 #define MAXNODE        255
-#define COST_INFINITY  9999
 #define INVALID_HOP_I  -1
+#define COST_INFINITY  16
 #define DEF_PERIOD 30
 #define DEF_TTL 3
+#define DEF_INT "eth0"
 #define MAX_HOST_LENGTH 255
 
 /**
@@ -46,6 +47,7 @@ struct _node_config
     int ssock;			/**< Send UDP socket */
     cost_t ttl;			/**< Default TTL for routing table entries */
     unsigned int period;	/**< Sending update message period */
+    cost_t infinity;		/**< Infinity value */
     bool_t shorizon;		/**< Using split horizon ? */
     bool_t debug;		/**< Is in debug mode ? */
 };
@@ -104,7 +106,6 @@ advert_entry_t adtable;
  * Each entry of a message. 
  * It is not a pointer because its desirable to be in-memory aligned.
  */
-
 struct _message_entry 
 {
     struct in_addr dest_addr;
