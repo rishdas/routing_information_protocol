@@ -1,4 +1,3 @@
-
 \documentclass[10pt]{extarticle}
 \usepackage[utf8]{inputenc}     % permite edição direta com acentos
 \usepackage[pdftex]{hyperref}
@@ -49,6 +48,7 @@
 \newcommand{\abracket}[1]{$\langle$\texttt{#1}$\rangle$}
 \newcommand{\specialcell}[2][c]{%
   \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+\newcommand{\us}{$\mu$s}
 
 \title{Computer Network Assignment 3 Write-up}
 \author{Lucas Brasilino \\ 
@@ -419,7 +419,7 @@ threads.
 
 For application evaluation, some test cases were designed and performed.
 
-\subsection{Test Case 1}
+\subsection{Test Case 1 - Acyclic graph with single failure}
 
 In this test case, three nodes were executed in a linear topology as depicted in
 Figure~\ref{fig:testcase1}. Table~\ref{tab:testcase1nosh} shows the convergence
@@ -441,8 +441,8 @@ seconds, including Infinity and Period.
 \centering
 \begin{tabular}{| c | c | c | c |}
 \hline
-Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3)}  &
-\specialcell{One down\\(node 1, node 2)} \\
+Infinity & Period & \specialcell{Initialization\\(bandicoot, basalt, blesmol)}  &
+\specialcell{One down\\(bandicoot, basalt)} \\
 \hline
 \hline
 16 & 10 & (20, 9, 17) & (40, 60) \\
@@ -459,8 +459,8 @@ Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3)}  &
 \centering
 \begin{tabular}{| c | c | c | c | c | c | c |}
 \hline
-Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3)}  &
-\specialcell{One down\\(node 1, node 2)} \\
+Infinity & Period & \specialcell{Initialization\\(bandicoot, basalt, blesmol)}  &
+\specialcell{One down\\(bandicoot, basalt)} \\
 \hline
 \hline
 16 & 10 & (20, 9, 18)  & (40, 40) \\
@@ -479,12 +479,13 @@ seconds to 10 seconds.
 
 \newpage
 
-\subsection{Test Case 2}
+\subsection{Test Case 2 - Cyclic graph with single failure}
 
 In this test case, four nodes were executed in a cyclic topology as depicted in
 Figure~\ref{fig:testcase2}. Again, Table~\ref{tab:testcase2nosh} shows the convergence
 time without using split horizon, while Table~\ref{tab:testcase2sh} shows the
-results with split horizon.
+results with split horizon. Times without unit are in seconds. Times in
+microsseconds are followed by \us\ symbol.
 
 \begin{figure}[!h]
   \centering
@@ -499,14 +500,14 @@ results with split horizon.
 \centering
 \begin{tabular}{| c | c | c | c |}
 \hline
-Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3, node 4)}  &
-\specialcell{One down\\(node 1, node 2, node 4)} \\
+Infinity & Period & \specialcell{Initialization\\(bandicoot, basalt, blesmol, bobac)}  &
+\specialcell{One down\\(bandicoot, basalt, bobac)} \\
 \hline
 \hline
-16 & 10 &  (20, 10, 19, 9) & (338, 30, 30) \\
-16 & 30 &  (60, 28, 56, 25) & (1947, 387, 390) \\
-50 & 10 &  (20, 9, 18, 7) &  (616, 30, 30) \\
-50 & 30 &  (60, 28, 56, 24) & (3528, 392, 390) \\
+16 & 10 &  (20, 10, 19, 9) & (338\us, 30, 30) \\
+16 & 30 &  (60, 28, 56, 25) & (1947\us, 387\us, 390\us) \\
+50 & 10 &  (20, 9, 18, 7) &  (616\us, 30, 30) \\
+50 & 30 &  (60, 28, 56, 24) & (3528\us, 392\us, 390\us) \\
 \hline
 \end{tabular}
 \end{table}
@@ -517,8 +518,8 @@ Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3, node 4
 \centering
 \begin{tabular}{| c | c | c | c |}
 \hline
-Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3, node 4)}  &
-\specialcell{One down\\(node 1, node 2, node 4)} \\
+Infinity & Period & \specialcell{Initialization\\(bandicoot, basalt, blesmol, bobac)}  &
+\specialcell{One down\\(bandicoot, basalt, bobac)} \\
 \hline
 \hline
 16 & 10 & (20, 8, 17, 7)  & (30, 30, 40) \\
@@ -529,13 +530,75 @@ Infinity & Period & \specialcell{Initialization\\(node 1, node 2, node 3, node 4
 \end{tabular}
 \end{table}
 
-Confirming our  observation from  the previous  test case here  also we  see the
-convergence time without  split horizon being very high compared  to low in case
-of split horizon(With  split horizon: 120 Without Split Horizon:  1947). One new
-trend which we observed  in this test case was the  variance in convergence time
-without  split horizon  when  we vary  the INFINITY  COST(INFINITY:  16 -  Time:
-1947,INFINITY: 50  Time: 3528). Again  this trend is the  same when we  vary the
-period from 30 to 10 seconds.
+No  in this  test case  a different  trend is  observed as  this is  cyclic with
+graph. The convergence time in case of  without split horizon is way much faster
+than that with split horizon attributed  to triggred updates. This may look like
+positive trend but its not cause even though it converges faster but while doing
+that  it   creates  routing  loops   which  can   be  dangerous  in   real  time
+environment. Split horizon even though converging slower is stable at each point
+i.e very less instances of loops which  fade away slowly. This trend is also the
+same with reduced period of 10 seconds.
+\newpage
+\subsection{Test Case 3 - Multicyclic graph with multiple failure}
+
+In this test case, five nodes were executed in a multicyclic topology as depicted in
+Figure~\ref{fig:testcase3}. Table~\ref{tab:testcase2nosh} shows the convergence
+time without using split horizon, while Table~\ref{tab:testcase2sh} shows the
+results with split horizon. Again, times without unit are in seconds while times
+in microsseconds are followed by \us\ symbol.
+
+\begin{figure}[!h]
+  \centering
+    \includegraphics[scale=0.53]{TestCase3.png}
+    \caption{Test Case 3 five node multicyclic topology}
+    \label{fig:testcase3}
+\end{figure}
+
+\begin{table}[!h]
+\caption{Convergence time without split horizon}
+\label{tab:testcase3nosh}
+\centering
+\begin{tabular}{| c | c | c | c | c |}
+\hline
+Infinity & Period & \specialcell{Initialization\\(bandicoot, basalt, blesmol,
+  bobac, breccia)}  &
+\specialcell{One down\\(basalt, blesmol, bobac, breccia)} & \
+\specialcell{Two down\\(basalt, blesmol, bobac)} \\
+\hline
+\hline
+16 & 10 & (10, 9, 19, 8, 7) & (246\us, 664\us, 267\us, 758\us) & (10, 1647\us, 10) \\
+16 & 30 & (30, 29, 59, 28, 27) & (197\us, 1297\us, 266\us, 1898\us) & (485\us, 270\us, 469\us)  \\
+50 & 10 & (10, 9, 19, 8, 7) & (224\us, 659\us, 341\us, 949\us) & (1304\us, 851\us, 1310\us)  \\
+50 & 30 & (30, 29, 59, 28, 27) & (234\us, 699\us, 273\us, 818\us) & (395\us, 8208\us, 400\us)  \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[!h]
+\caption{Convergence time with split horizon}
+\label{tab:testcase3sh}
+\centering
+\begin{tabular}{| c | c | c | c | c |}
+\hline
+Infinity & Period & \specialcell{Initialization\\(bandicoot, basalt, blesmol,
+  bobac, breccia)}  &
+\specialcell{One down\\(basalt, blesmol, bobac, breccia)} & \
+\specialcell{Two down\\(basalt, blesmol, bobac)} \\
+\hline
+\hline
+16 & 10 & (10, 10, 19, 30, 7) & (180, 160, 130, 170)  & (230, 230, 230)  \\
+16 & 30 & (30, 29, 58, 28, 27) & (300, 300, 210, 270)  & (301, 301, 301) \\
+50 & 10 & (10, 10, 10, 20, 10) & (130, 130, 100, 140) & (485, 270, 469) \\
+50 & 30 & (30, 29, 58, 28, 27)  & (300, 240, 515, 270)  & (420, 420, 420) \\
+\hline
+\end{tabular}
+\end{table}
+
+With this Test case we do multiple  node failures. As this topology comprises of
+graphs and many nodes again without  split horizon the convergence is faster due
+to  triggred  updates but  it  does  create routing  loops  along  the way.  The
+convergence time is more or less the same  in case one node failure and two node
+failure. This trend is also the same with reduced period of 10 seconds.
 
 \end{document}
 
