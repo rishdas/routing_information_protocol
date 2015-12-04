@@ -161,13 +161,14 @@ to accomplish this functionality. The options are:
 \item{\texttt{-i}} \abracket{interface} : inform  by which interface the process
 will bind to. The IP of it is also used as a identifier within the routing table
 (array \texttt{routingtable[]}) (Default: eth0)
-\item{\texttt{-u}} \abracket{port}  : inform  which UDP port  might be  used for
+\item{\texttt{-u}} \abracket{port} : inform  which UDP port  might be  used for
 receiving update messages
-\item{\texttt{-p}} \abracket{period}  : period,  in seconds, for  sending update
+\item{\texttt{-p}} \abracket{period} : period,  in seconds, for  sending update
 messages. (Default: 30)
-\item{\texttt{-t}}  \abracket{ttl}  :  the  expiration TTL  from  routing  table
+\item{\texttt{-t}}  \abracket{ttl} :  the  expiration TTL  from  routing  table
 (Default 3).  The final TTL  in seconds  is calculated by  period x ttl,  so the
 default TTL, in seconds, is (3 x 30 = 90)
+\item{\texttt{-y}}  \abracket{infinity} : set the infinity value (Default: 16)
 \item{\texttt{-s}} : enables split horizon
 \item{\texttt{-d}} : enables  debug, so the \texttt{stderr} is  sent to console,
 otherwise it will be sent to file 'rip\_\abracket{hostname}.log'
@@ -363,7 +364,7 @@ with \textbf{rip\_up\_ttl} thread.
 \paragraph{rip\_up\_ttl}: This thread sleeps for period time (defined by the
 \texttt{-p} option), wakes up, executes a procedure, and then goes back to sleep
 again. The procedure is to decrease the ttl value in each graph node and if ttl
-value reaches 0 it sets the COST to \texttt{COST\_INFINITY} (9999). 
+value reaches 0 it sets the COST to \texttt{COST\_INFINITY} (16). 
 It uses the mutex \texttt{graph\_lock} to synchronize access to shared data
 structure \texttt{r\_graph}.
 
@@ -379,13 +380,37 @@ between the main process and the thread \textbf{rip\_up}. They are:
 \item{\texttt{adtable}:} the advertised table received from a neighbor;
 \item{\texttt{r\_graph}:} the graph, i.e., the cost and ttl to a given
   node. Each index is associated with the index in the routing table;
-
-
 \end{itemize}
 
+The conditional variables are members of \texttt{adtable} data structure. Are
+they:
 
+\begin{itemize}
+\item{\texttt{adtable.ready}:} Is used by the main process to signals
+  \textbf{rip\_up} thread that it must execute;
+\item{\texttt{adtable.is\_empty}:} Tells \textbf{rip\_up} thread if
+  \texttt{adtable} is empty. If it is empty, \textbf{rip\_up} checks if sending update
+is required (\texttt{rip\_util\_is\_update\_required()}). If the result is true, 
+\texttt{rip\_net\_send\_advertisement()} is called. If \texttt{adtable} is not
+empty,
+i.e., the node has received an advertisement message, it calculates and updates
+the distance vector and the graph.
+\end{itemize}
 
+\subsection{Mutexes}
 
+Two mutexes are used in the application:
+
+\begin{lstlisting}
+/* Mutex */
+pthread_mutex_t lock;
+pthread_mutex_t graph_lock;
+\end{lstlisting}
+
+\texttt{lock} mutex controls the access to \texttt{adtable} between the main
+process and \textbf{rip\_up} thread. \texttt{graph\_lock} mutex controls the
+access to \texttt{r\_graph} between \textbf{rip\_up} and \textbf{rip\_up\_ttl}
+threads.
 
 \end{document}
 
